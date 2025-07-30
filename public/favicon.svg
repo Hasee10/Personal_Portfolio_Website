@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-brain<boltAction type="file" filePath="public/favicon.svg">
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M9.5 2a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5Z"></path>
+  <path d="M14.5 2a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5Z"></path>
+  <path d="M3 7.5c0-1.667 1.333-3 3-3"></path>
+  <path d="M21 7.5c0-1.667-1.333-3-3-3"></path>
+  <path d="M3 10.5c0 1.667 1.333 3 3 3"></path>
+  <path d="M21 10.5c0 1.667-1.333 3-3 3"></path>
+  <path d="M9.5 17a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5Z"></path>
+  <path d="M14.5 17a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5Z"></path>
+  <path d="M18 13.5c-1.667 0-3 1.333-3 3"></path>
+  <path d="M6 13.5c1.667 0 3 1.333 3 3"></path>
+  <path d="M12 7v10"></path>
+</svg>
