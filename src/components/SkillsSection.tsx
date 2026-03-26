@@ -21,6 +21,7 @@ import {
   Palette,
   Network
 } from 'lucide-react';
+import { GlowingEffect } from '@/components/ui/glowing-effect';
 
 interface SkillProps {
   icon: React.ReactNode;
@@ -31,14 +32,24 @@ interface SkillProps {
 const Skill: React.FC<SkillProps> = ({ icon, name, color }) => {
   return (
     <motion.div
-      className="group relative inline-flex items-center gap-2 rounded-full bg-white/[0.05] px-4 py-2 hover:bg-white/[0.08] transition-colors"
+      className="skill-pill-shell group relative inline-flex rounded-full p-[1px]"
       whileHover={{ scale: 1.05 }}
       transition={{ type: 'spring', stiffness: 400, damping: 17 }}
     >
-      <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${color}`}>
-        {icon}
+      <GlowingEffect
+        spread={32}
+        glow={true}
+        disabled={false}
+        proximity={52}
+        inactiveZone={0.01}
+        borderWidth={1.5}
+      />
+      <div className="skill-pill-inner relative inline-flex items-center gap-2 rounded-full bg-white/[0.05] px-4 py-2 transition-colors group-hover:bg-white/[0.08]">
+        <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${color}`}>
+          {icon}
+        </div>
+        <span className="font-medium text-gray-200">{name}</span>
       </div>
-      <span className="font-medium text-gray-200">{name}</span>
     </motion.div>
   );
 };
@@ -46,17 +57,27 @@ const Skill: React.FC<SkillProps> = ({ icon, name, color }) => {
 const MoreSkillsIndicator: React.FC = () => {
   return (
     <motion.div
-      className="group relative inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-indigo-500/20 px-4 py-2 hover:from-purple-500/30 hover:via-pink-500/30 hover:to-indigo-500/30 transition-all cursor-pointer"
+      className="skill-pill-shell group relative inline-flex rounded-full p-[1px] cursor-pointer"
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
       transition={{ type: 'spring', stiffness: 400, damping: 17 }}
     >
-      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/10">
-        <Sparkles className="w-5 h-5 text-white" />
+      <GlowingEffect
+        spread={32}
+        glow={true}
+        disabled={false}
+        proximity={52}
+        inactiveZone={0.01}
+        borderWidth={1.5}
+      />
+      <div className="skill-pill-inner relative inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-indigo-500/20 px-4 py-2 transition-all hover:from-purple-500/30 hover:via-pink-500/30 hover:to-indigo-500/30">
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/10">
+          <Sparkles className="w-5 h-5 text-white" />
+        </div>
+        <span className="font-medium text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-indigo-400">
+          And More...
+        </span>
       </div>
-      <span className="font-medium text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-indigo-400">
-        And More...
-      </span>
       <motion.div
         className="absolute inset-0 -z-10 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"
         animate={{

@@ -3,32 +3,41 @@ import Navbar from './components/Navbar';
 import { HeroDemo } from './components/HeroDemo';
 import ExperienceSection from './components/ExperienceSection';
 import SkillsSection from './components/SkillsSection';
+import ArticlesSection from './components/ArticlesSection';
 import ProjectsSection from './components/ProjectsSection';
 import WhyMeSection from './components/WhyMeSection';
 import ContactSection from './components/ContactSection';
 import Footer from './components/Footer';
 
 function App() {
-  // Add smooth scrolling behavior
   useEffect(() => {
-    const handleLinkClick = (e) => {
-      const target = e.target.closest('a[href^="#"]');
-      if (!target) return;
-      
-      e.preventDefault();
-      const id = target.getAttribute('href').slice(1);
-      const element = document.getElementById(id);
-      
-      if (element) {
-        window.scrollTo({
-          top: element.offsetTop,
-          behavior: 'smooth'
+    document.documentElement.style.scrollBehavior = 'smooth';
+
+    const sections = Array.from(document.querySelectorAll('section[id]'));
+    sections.forEach((section) => {
+      section.classList.add('reveal');
+      if (section.id === 'home') section.classList.add('visible');
+    });
+
+    const revealObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+          }
         });
-      }
+      },
+      { threshold: 0.16 }
+    );
+
+    sections
+      .filter((section) => section.id !== 'home')
+      .forEach((section) => revealObserver.observe(section));
+
+    return () => {
+      document.documentElement.style.scrollBehavior = '';
+      revealObserver.disconnect();
     };
-    
-    document.addEventListener('click', handleLinkClick);
-    return () => document.removeEventListener('click', handleLinkClick);
   }, []);
 
   return (
@@ -58,6 +67,7 @@ function App() {
         </section>
         <ExperienceSection />
         <SkillsSection />
+        <ArticlesSection />
         <ProjectsSection />
         <WhyMeSection />
         <ContactSection />

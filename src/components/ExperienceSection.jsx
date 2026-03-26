@@ -1,189 +1,164 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { useInView } from 'react-intersection-observer';
-import { HoverCard, HoverCardTrigger, HoverCardContent } from '@/components/ui/hover-card';
+import React, { useEffect, useRef } from 'react';
 import { GlowingEffect } from '@/components/ui/glowing-effect';
-import { Mail, Code, Globe, Trophy, Calendar, Lightbulb} from 'lucide-react';
 
 const experiences = [
   {
-    title: "Honourable Delegate - MUN Conferences",
-    company: "LGS IMUN & Regional MUNs",
-    period: "2017 - 2019",
-    description: "Actively participated in various Model United Nations conferences during O-Levels, receiving multiple Honourable Mentions for outstanding diplomatic performance and policy negotiation.",
+    role: 'Honourable Delegate',
+    org: 'LGS IMUN & Regional MUNs',
+    period: '2017-2019',
+    side: 'left',
+    description:
+      'Built an early foundation in diplomacy, negotiation, and confident public speaking through multiple Model United Nations conferences.',
     achievements: [
-      "Awarded Honourable Mentions at LGS IMUN and other regional MUNs",
-      "Represented countries in committees like UNHRC and DISEC",
-      "Developed strong public speaking, policy writing, and diplomatic skills"
+      'Received honourable mentions across regional MUN committees.',
+      'Strengthened policy writing and committee strategy under pressure.',
+      'Developed persuasive speaking and structured debate skills.',
     ],
-    skills: ["Public Speaking", "Debate", "Negotiation", "International Policy"],
-    icon: Globe,
-    link: "https://www.lgsimun.com/"
+    tags: ['Diplomacy', 'Public Speaking', 'Negotiation'],
   },
   {
-    title: "Best Delegate - MUN Conferences",
-    company: "LGS IMUN & Regional MUNs",
-    period: "2020 - 2021",
-    description: "Actively participated in various Model United Nations conferences during A-Levels, receiving multiple Honourable Mentions for outstanding diplomatic performance and policy negotiation.",
+    role: 'Best Delegate',
+    org: 'LGS IMUN & Regional MUNs',
+    period: '2020-2021',
+    side: 'right',
+    description:
+      'Progressed from participation to top-ranked delegate performance, representing positions with stronger research depth and sharper committee execution.',
     achievements: [
-      "Awarded Best Delegate at LGS IMUN and other regional MUNs",
-      "Represented countries in committees like UNHRC and DISEC",
-      "Developed strong public speaking, policy writing, and diplomatic skills"
+      'Earned Best Delegate recognition in competitive regional events.',
+      'Led committee strategy with high-quality position papers.',
+      'Refined leadership and coalition-building across debate sessions.',
     ],
-    skills: ["Public Speaking", "Debate", "Negotiation", "International Policy"],
-    icon: Globe,
-    link: "https://www.lgsimun.com/"
+    tags: ['Leadership', 'Debate', 'Research'],
   },
   {
-    title: "Runner-up - Software Competition",
-    company: "NASCON",
-    period: "Mar 2024",
-    description: "Secured Runner-up position at NASCON 2024 for building a cutting-edge software solution that demonstrated innovation, technical depth, and real-world applicability.",
+    role: 'Runner-up - Software Competition',
+    org: 'NASCON',
+    period: 'May 2024',
+    side: 'left',
+    description:
+      'Delivered a technically strong software solution in a fast-paced competition setting, balancing speed, product thinking, and presentation quality.',
     achievements: [
-      "Built a scalable web-based solution from scratch under timed competition constraints",
-      "Presented the project to a panel of industry professionals and academic judges",
-      "Outperformed numerous university teams across Pakistan"
+      'Built and presented a working solution under competition constraints.',
+      'Placed runner-up among strong university-level teams.',
+      'Demonstrated practical problem-solving and product delivery skills.',
     ],
-    skills: ["Web Development", "Teamwork", "Pitching", "Rapid Prototyping"],
-    icon: Trophy,
-    link: "https://nascon.nu.edu.pk/"
+    tags: ['Software', 'Rapid Prototyping', 'Presentation'],
   },
   {
-    title: "Event Management Member",
-    company: "Breathe Pakistan",
-    period: "Feb 2025 - May 2025",
-    description: "Contributed to the successful execution of large-scale awareness events as part of Breathe Pakistan’s administration team, managing logistics, volunteer coordination, and vendor liaison.",
+    role: 'Event Management Member',
+    org: 'Breathe Pakistan',
+    period: 'Jul 2024 - May 2025',
+    side: 'right',
+    description:
+      'Supported planning and execution for public-facing events, helping coordinate logistics, timelines, volunteers, and vendor communication.',
     achievements: [
-      "Coordinated logistics and schedules for awareness and environmental events",
-      "Liaised with vendors and guest speakers to ensure smooth execution",
-      "Managed teams of volunteers to maintain discipline and engagement"
+      'Coordinated operational details for awareness-focused events.',
+      'Worked across teams to keep schedules and logistics aligned.',
+      'Helped maintain smooth on-ground execution during event days.',
     ],
-    skills: ["Event Planning", "Team Coordination", "Logistics", "Communication"],
-    icon: Calendar,
-    link: "https://www.instagram.com/breathepakistan/"
+    tags: ['Operations', 'Coordination', 'Events'],
   },
   {
-    title: "Community Member",
-    company: "Spain-Based AI Startup",
-    period: "Jul 2025 - Present",
-    description: "Collaborating with a Spain-based AI startup focused on democratizing AI tools for small businesses, offering insights on user experience and product-market fit from a South Asian perspective.",
+    role: 'Community Member',
+    org: 'South Asian AI Startup',
+    period: 'Jul 2023 - Present',
+    side: 'left',
+    description:
+      'Contributing perspective and feedback within an AI startup community focused on emerging tools, product thinking, and real-world adoption.',
     achievements: [
-      "Provided UX feedback based on user testing within the South Asian market",
-      "Assisted in refining AI tool usability and onboarding workflows",
-      "Contributed to brainstorming sessions for product and feature development"
+      'Shared feedback around usability and regional market needs.',
+      'Contributed to product discussions around AI adoption.',
+      'Stayed involved in a network shaping practical AI experiences.',
     ],
-    skills: ["AI Tools", "UX Feedback", "Global Collaboration", "Market Research"],
-    icon: Lightbulb,
-    link: "https://example.com/startup" // Replace with actual link
-  }
+    tags: ['AI Community', 'Product Feedback', 'Startup'],
+  },
 ];
 
+const ExperienceSection = () => {
+  const sectionRef = useRef(null);
 
-const ExperienceCard = ({ experience, index }) => {
-  const [ref, inView] = useInView({
-    triggerOnce: true,
-    threshold: 0.2,
-  });
+  useEffect(() => {
+    const cards = sectionRef.current?.querySelectorAll('.timeline-card');
+    if (!cards?.length) return undefined;
 
-  const Icon = experience.icon;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.2 }
+    );
+
+    cards.forEach((card) => observer.observe(card));
+
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <motion.div
-      ref={ref}
-      className="timeline-item mb-8"
-      initial={{ opacity: 0, y: 20 }}
-      animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-      transition={{ 
-        duration: 0.7,
-        delay: index * 0.3,
-        ease: [0.21, 0.47, 0.32, 0.98]
-      }}
+    <section
+      id="experience"
+      ref={sectionRef}
+      className="experience-section scroll-section reveal relative overflow-hidden bg-gradient-to-b from-background to-background/95 py-24"
     >
-      <div className="relative h-full rounded-[1.25rem] border-[0.75px] border-border p-2 md:rounded-[1.5rem] md:p-3">
-        <GlowingEffect
-          spread={40}
-          glow={true}
-          disabled={false}
-          proximity={64}
-          inactiveZone={0.01}
-          borderWidth={3}
-        />
-        <div className="relative flex h-full flex-col justify-between gap-6 overflow-hidden rounded-xl border-[0.75px] bg-background p-6 shadow-sm dark:shadow-[0px_0px_27px_0px_rgba(45,45,45,0.3)] md:p-6">
-          <div className="flex items-start justify-between">
-            <div className="flex-1">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-10 h-10 rounded-lg border-[0.75px] border-white/10 bg-white/5 p-2 flex items-center justify-center">
-                  <Icon className="h-5 w-5 text-indigo-400" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(124,58,237,0.16),transparent_32%),radial-gradient(circle_at_100%_30%,rgba(236,72,153,0.08),transparent_24%)]" />
+
+      <div className="relative z-10 mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto mb-16 max-w-3xl text-center">
+          <h2 className="mb-4 text-3xl font-bold md:text-5xl">
+            <span className="bg-gradient-to-r from-[#7c3aed] via-[#8b5cf6] to-[#ec4899] bg-clip-text text-transparent">
+              Experience
+            </span>
+          </h2>
+          <p className="text-base leading-7 text-[#9ca3af] md:text-lg">
+            A timeline of leadership, competition, community, and hands-on coordination that shaped how I build and collaborate.
+          </p>
+        </div>
+
+        <div className="timeline">
+          <div className="timeline-line" aria-hidden="true" />
+          {experiences.map((experience) => (
+            <div
+              key={`${experience.role}-${experience.period}`}
+              className={`timeline-row timeline-row--${experience.side}`}
+            >
+              <div className={`timeline-card timeline-card--${experience.side}`}>
+                <span className="timeline-dot" aria-hidden="true" />
+                <div className="timeline-shell">
+                  <GlowingEffect
+                    spread={40}
+                    glow={true}
+                    disabled={false}
+                    proximity={64}
+                    inactiveZone={0.01}
+                    borderWidth={2}
+                  />
+                  <article className="timeline-panel">
+                    <h3 className="timeline-role">{experience.role}</h3>
+                    <p className="timeline-org">{experience.org}</p>
+                    <p className="timeline-period">{experience.period}</p>
+                    <p className="timeline-description">{experience.description}</p>
+
+                    <ul className="timeline-achievements">
+                      {experience.achievements.slice(0, 3).map((achievement) => (
+                        <li key={achievement}>{achievement}</li>
+                      ))}
+                    </ul>
+
+                    <div className="timeline-tags">
+                      {experience.tags.map((tag) => (
+                        <span key={tag} className="timeline-tag">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </article>
                 </div>
-                <div>
-                  <h3 className="text-xl font-semibold text-foreground">{experience.title}</h3>
-                  <a 
-                    href={experience.link}
-                    target="_blank"
-                    rel="noopener noreferrer" 
-                    className="text-sm text-indigo-400 hover:text-indigo-300 transition-colors"
-                  >
-                    {experience.company}
-                  </a>
-                </div>
-              </div>
-              <p className="text-sm text-gray-400 mb-4">{experience.period}</p>
-              <p className="text-gray-300 mb-4">{experience.description}</p>
-              
-              <div className="space-y-2">
-                {experience.achievements.map((achievement, i) => (
-                  <div key={i} className="flex items-start gap-2">
-                    <span className="text-indigo-400 mt-1">•</span>
-                    <p className="text-gray-300 text-sm">{achievement}</p>
-                  </div>
-                ))}
-              </div>
-              
-              <div className="flex flex-wrap gap-2 mt-4">
-                {experience.skills.map((skill, i) => (
-                  <span
-                    key={i}
-                    className="px-2 py-1 text-xs rounded-full bg-indigo-500/20 text-indigo-300"
-                  >
-                    {skill}
-                  </span>
-                ))}
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </motion.div>
-  );
-};
-
-const ExperienceSection = () => {
-  const [ref, inView] = useInView({
-    triggerOnce: true,
-    threshold: 0.1,
-  });
-
-  return (
-    <section id="experience" className="scroll-section bg-gradient-to-b from-background to-background/95 py-20">
-      <div className="container mx-auto px-4">
-        <motion.div
-          ref={ref}
-          initial={{ opacity: 0, y: 20 }}
-          animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-          transition={{ duration: 0.8, ease: [0.21, 0.47, 0.32, 0.98] }}
-          className="mb-16 text-center"
-        >
-          <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">
-            <span className="text-gradient">Experience</span>
-          </h2>
-          <p className="text-gray-300 max-w-2xl mx-auto">
-            My journey in automation and technical leadership
-          </p>
-        </motion.div>
-        
-        <div className="max-w-3xl mx-auto">
-          {experiences.map((experience, index) => (
-            <ExperienceCard key={index} experience={experience} index={index} />
           ))}
         </div>
       </div>

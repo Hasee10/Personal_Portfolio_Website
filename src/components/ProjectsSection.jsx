@@ -18,6 +18,7 @@ import {
   Waypoints,
   Workflow,
 } from 'lucide-react';
+import { GlowingEffect } from '@/components/ui/glowing-effect';
 
 const FILTERS = [
   { label: 'All', value: 'all' },
@@ -186,71 +187,81 @@ function ProjectCard({ project, index }) {
     <motion.article
       layout
       data-category={project.category}
-      className="project-card group"
+      className="project-card-shell group"
       style={{ '--project-gradient': project.gradient }}
       initial={{ opacity: 0, scale: 0.94, y: 24 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.92, y: 18 }}
       transition={{ duration: 0.35, delay: index * 0.04, ease: [0.22, 1, 0.36, 1] }}
     >
-      <div className="project-banner">
-        <div className="project-banner__shine" aria-hidden="true" />
-        <div className="project-banner__actions">
-          <a
-            href={project.github}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="project-icon-button"
-            aria-label={`${project.title} GitHub repository`}
-          >
-            <Github className="h-4 w-4" />
-          </a>
-          {project.demo ? (
+      <GlowingEffect
+        spread={40}
+        glow={true}
+        disabled={false}
+        proximity={64}
+        inactiveZone={0.01}
+        borderWidth={2}
+      />
+      <div className="project-card">
+        <div className="project-banner">
+          <div className="project-banner__shine" aria-hidden="true" />
+          <div className="project-banner__actions">
             <a
-              href={project.demo}
+              href={project.github}
               target="_blank"
               rel="noopener noreferrer"
               className="project-icon-button"
-              aria-label={`${project.title} live demo`}
+              aria-label={`${project.title} GitHub repository`}
             >
-              <ExternalLink className="h-4 w-4" />
+              <Github className="h-4 w-4" />
             </a>
-          ) : null}
-        </div>
-        <div className="project-banner__icon">
-          <Icon strokeWidth={1.8} className="h-12 w-12" />
-        </div>
-      </div>
-
-      <div className="project-card__body">
-        <div className="space-y-4">
-          <div className="space-y-3">
-            <h3 className="text-[1.25rem] font-semibold tracking-[-0.03em] text-white">
-              {project.title}
-            </h3>
-            <p className="project-card__description text-sm leading-6 text-[#9ca3af]">
-              {project.description}
-            </p>
+            {project.demo ? (
+              <a
+                href={project.demo}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="project-icon-button"
+                aria-label={`${project.title} live demo`}
+              >
+                <ExternalLink className="h-4 w-4" />
+              </a>
+            ) : null}
           </div>
-
-          <div className="flex flex-wrap gap-2">
-            {project.tags.map((tag) => (
-              <span key={`${project.title}-${tag}`} className="project-tag">
-                {tag}
-              </span>
-            ))}
+          <div className="project-banner__icon">
+            <Icon strokeWidth={1.8} className="h-12 w-12" />
           </div>
         </div>
 
-        <a
-          href={project.demo || project.github}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="project-link"
-        >
-          <span>View Project</span>
-          <ArrowRight className="h-4 w-4" />
-        </a>
+        <div className="project-card__body">
+          <div className="space-y-4">
+            <div className="space-y-3">
+              <h3 className="text-[1.25rem] font-semibold tracking-[-0.03em] text-white">
+                {project.title}
+              </h3>
+              <p className="project-card__description text-sm leading-6 text-[#9ca3af]">
+                {project.description}
+              </p>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              {project.tags.map((tag) => (
+                <span key={`${project.title}-${tag}`} className="project-tag">
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <a
+            href={project.demo || project.github}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="project-link"
+          >
+            <span>View Project</span>
+            <ArrowRight className="h-4 w-4" />
+          </a>
+        </div>
       </div>
     </motion.article>
   );
