@@ -49,7 +49,7 @@ function App() {
           </div>
           
           {/* Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/80 to-background z-10"></div>
+          <div className="hero-background-overlay absolute inset-0 z-10"></div>
           
           {/* Content */}
           <div className="z-20 w-full">
