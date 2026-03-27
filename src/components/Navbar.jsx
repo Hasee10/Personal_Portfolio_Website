@@ -69,8 +69,8 @@ const Navbar = ({ mode = 'home' }) => {
   return (
     <header className={`fixed left-0 right-0 top-0 z-50 transition-all duration-300 ${scrolled ? 'glass-nav py-3' : 'py-5'}`}>
       <div className="mx-auto flex max-w-7xl justify-end px-4 sm:px-6 lg:px-8">
-        <nav className="rounded-full border border-white/10 bg-[#0a0a0f]/35 px-2 py-2 backdrop-blur-xl">
-          <ul className="flex flex-wrap items-center justify-center gap-1">
+        <nav className="w-full border-b border-white/10">
+          <ul className="flex flex-wrap items-center justify-end gap-2 sm:gap-4">
             {navItems.map((item) => {
               const isActive = activeSection === item.id;
 
