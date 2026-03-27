@@ -1,16 +1,44 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
-const navItems = ['home', 'experience', 'skills', 'articles', 'projects', 'contact'];
+const sections = ['home', 'experience', 'skills', 'articles', 'projects', 'contact'];
 
-const Navbar = () => {
-  const [activeSection, setActiveSection] = useState('home');
+const Navbar = ({ mode = 'home' }) => {
+  const [activeSection, setActiveSection] = useState(mode === 'home' ? 'home' : 'projects');
   const [scrolled, setScrolled] = useState(false);
+
+  const navItems = useMemo(() => {
+    if (mode === 'home') {
+      return [
+        { id: 'home', label: 'Home', href: '#home' },
+        { id: 'experience', label: 'Experience', href: '#experience' },
+        { id: 'skills', label: 'Skills', href: '#skills' },
+        { id: 'articles', label: 'Articles', href: '#articles' },
+        { id: 'projects', label: 'Projects', href: '/projects.html' },
+        { id: 'contact', label: 'Contact', href: '#contact' },
+      ];
+    }
+
+    return [
+      { id: 'home', label: 'Home', href: '/index.html#home' },
+      { id: 'experience', label: 'Experience', href: '/index.html#experience' },
+      { id: 'skills', label: 'Skills', href: '/index.html#skills' },
+      { id: 'articles', label: 'Articles', href: '/index.html#articles' },
+      { id: 'projects', label: 'Projects', href: '/projects.html' },
+      { id: 'contact', label: 'Contact', href: '/index.html#contact' },
+    ];
+  }, [mode]);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 24);
     handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
 
-    const sections = navItems
+    if (mode !== 'home') {
+      setActiveSection('projects');
+      return () => window.removeEventListener('scroll', handleScroll);
+    }
+
+    const observedSections = sections
       .map((id) => document.getElementById(id))
       .filter(Boolean);
 
@@ -30,14 +58,13 @@ const Navbar = () => {
       }
     );
 
-    sections.forEach((section) => observer.observe(section));
-    window.addEventListener('scroll', handleScroll, { passive: true });
+    observedSections.forEach((section) => observer.observe(section));
 
     return () => {
       window.removeEventListener('scroll', handleScroll);
       observer.disconnect();
     };
-  }, []);
+  }, [mode]);
 
   return (
     <header className={`fixed left-0 right-0 top-0 z-50 transition-all duration-300 ${scrolled ? 'glass-nav py-3' : 'py-5'}`}>
@@ -45,16 +72,16 @@ const Navbar = () => {
         <nav className="rounded-full border border-white/10 bg-[#0a0a0f]/35 px-2 py-2 backdrop-blur-xl">
           <ul className="flex flex-wrap items-center justify-center gap-1">
             {navItems.map((item) => {
-              const isActive = activeSection === item;
+              const isActive = activeSection === item.id;
 
               return (
-                <li key={item}>
+                <li key={item.id}>
                   <a
-                    href={`#${item}`}
+                    href={item.href}
                     className={`nav-link ${isActive ? 'nav-link--active' : ''}`}
                     aria-current={isActive ? 'page' : undefined}
                   >
-                    {item.charAt(0).toUpperCase() + item.slice(1)}
+                    {item.label}
                   </a>
                 </li>
               );
