@@ -8,6 +8,7 @@ import ProjectsSection from './components/ProjectsSection';
 import WhyMeSection from './components/WhyMeSection';
 import ContactSection from './components/ContactSection';
 import Footer from './components/Footer';
+import ParticlesCanvas from './components/ParticlesCanvas';
 
 function App() {
   useEffect(() => {
@@ -45,21 +46,14 @@ function App() {
       <Navbar />
       <main>
         <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
-          {/* 3D Particles Background */}
+          {/* Particles Background — React-managed, single WebGL context */}
           <div className="absolute inset-0 z-0">
-            {/* We'll keep the ParticlesCanvas here */}
-            <div className="w-full h-full" style={{ position: 'absolute' }}>
-              <iframe 
-                src="/particles.html" 
-                style={{ width: '100%', height: '100%', border: 'none' }}
-                title="Particles Background"
-              ></iframe>
-            </div>
+            <ParticlesCanvas />
           </div>
-          
+
           {/* Gradient Overlay */}
           <div className="hero-background-overlay absolute inset-0 z-10"></div>
-          
+
           {/* Content */}
           <div className="z-20 w-full">
             <HeroDemo />
