@@ -45,9 +45,7 @@ function App() {
       <Navbar />
       <main>
         <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
-          {/* 3D Particles Background */}
           <div className="absolute inset-0 z-0">
-            {/* We'll keep the ParticlesCanvas here */}
             <div className="w-full h-full" style={{ position: 'absolute' }}>
               <iframe 
                 src="/particles.html" 
@@ -57,10 +55,8 @@ function App() {
             </div>
           </div>
           
-          {/* Gradient Overlay */}
           <div className="hero-background-overlay absolute inset-0 z-10"></div>
           
-          {/* Content */}
           <div className="z-20 w-full">
             <HeroDemo />
           </div>

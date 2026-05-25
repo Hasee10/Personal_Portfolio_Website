@@ -7,7 +7,7 @@ const articlesData = [
     excerpt:
       'A deep dive into constructing autonomous agents using LangChain and Ollama without any boilerplate frameworks or hidden abstractions.',
     readTime: '8 min read',
-    url: '#',
+    url: null,
   },
   {
     title: 'Why RAG Still Matters in 2025',
@@ -15,7 +15,7 @@ const articlesData = [
     excerpt:
       'Retrieval-augmented generation remains one of the most practical ways to ground LLM outputs in factual data and production workflows.',
     readTime: '6 min read',
-    url: '#',
+    url: null,
   },
   {
     title: 'Computer Vision for Accessibility',
@@ -23,7 +23,7 @@ const articlesData = [
     excerpt:
       'How I built an AI virtual mouse using MediaPipe and OpenCV to help elderly and disabled users interact with computers more naturally.',
     readTime: '10 min read',
-    url: '#',
+    url: null,
   },
 ];
 
@@ -99,10 +99,12 @@ const ArticlesSection = () => {
                 <p className="article-card__excerpt">{article.excerpt}</p>
                 <div className="article-card__footer">
                   <span className="article-card__time">{article.readTime}</span>
-                  <a href={article.url} className="article-card__link" target="_blank" rel="noopener noreferrer">
-                    Read Article
-                    <ArrowIcon direction="right" />
-                  </a>
+                  {article.url && article.url !== '#' ? (
+                    <a href={article.url} className="article-card__link" target="_blank" rel="noopener noreferrer">
+                      Read Article
+                      <ArrowIcon direction="right" />
+                    </a>
+                  ) : null}
                 </div>
               </article>
             </div>

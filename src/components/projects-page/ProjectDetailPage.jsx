@@ -5,12 +5,18 @@ import { HighlightIcon, ProjectIcon, UiIcons } from '@/components/project/Projec
 
 const { Github, ExternalLink, ArrowLeft, CheckCircle2 } = UiIcons;
 
+function isAvailableLink(url) {
+  return Boolean(url && url !== '#');
+}
+
 const ProjectDetailPage = () => {
   const project = useMemo(() => {
     const params = new URLSearchParams(window.location.search);
     const id = params.get('id');
     return projectsData.find((item) => item.id === id) || projectsData[0];
   }, []);
+  const hasGithub = isAvailableLink(project.github);
+  const hasDemo = isAvailableLink(project.demo);
 
   return (
     <div className="project-detail-page min-h-screen bg-background text-foreground">
@@ -30,16 +36,20 @@ const ProjectDetailPage = () => {
 
           <section className="detail-hero-shell">
             <div className="detail-hero" style={{ '--project-gradient': project.gradient }}>
-              <div className="detail-hero__actions">
-                <a href={project.github} target="_blank" rel="noopener noreferrer" className="project-icon-button">
-                  <Github className="h-4 w-4" />
-                </a>
-                {project.demo ? (
-                  <a href={project.demo} target="_blank" rel="noopener noreferrer" className="project-icon-button">
-                    <ExternalLink className="h-4 w-4" />
-                  </a>
-                ) : null}
-              </div>
+              {hasGithub || hasDemo ? (
+                <div className="detail-hero__actions">
+                  {hasGithub ? (
+                    <a href={project.github} target="_blank" rel="noopener noreferrer" className="project-icon-button">
+                      <Github className="h-4 w-4" />
+                    </a>
+                  ) : null}
+                  {hasDemo ? (
+                    <a href={project.demo} target="_blank" rel="noopener noreferrer" className="project-icon-button">
+                      <ExternalLink className="h-4 w-4" />
+                    </a>
+                  ) : null}
+                </div>
+              ) : null}
 
               <div className="detail-hero__icon">
                 <ProjectIcon name={project.icon} className="h-16 w-16" />
@@ -122,19 +132,23 @@ const ProjectDetailPage = () => {
                 </dl>
               </div>
 
-              <div className="detail-sidebar-card">
-                <h3>Links</h3>
-                <div className="detail-link-stack">
-                  <a href={project.github} target="_blank" rel="noopener noreferrer" className="detail-link-button detail-link-button--outline">
-                    GitHub
-                  </a>
-                  {project.demo ? (
-                    <a href={project.demo} target="_blank" rel="noopener noreferrer" className="detail-link-button detail-link-button--filled">
-                      Live Demo
-                    </a>
-                  ) : null}
+              {hasGithub || hasDemo ? (
+                <div className="detail-sidebar-card">
+                  <h3>Links</h3>
+                  <div className="detail-link-stack">
+                    {hasGithub ? (
+                      <a href={project.github} target="_blank" rel="noopener noreferrer" className="detail-link-button detail-link-button--outline">
+                        GitHub
+                      </a>
+                    ) : null}
+                    {hasDemo ? (
+                      <a href={project.demo} target="_blank" rel="noopener noreferrer" className="detail-link-button detail-link-button--filled">
+                        Live Demo
+                      </a>
+                    ) : null}
+                  </div>
                 </div>
-              </div>
+              ) : null}
             </aside>
           </div>
         </div>

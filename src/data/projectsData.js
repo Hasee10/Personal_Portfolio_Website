@@ -33,10 +33,10 @@ export const projectsData = [
     ],
     challenge:
       'The core challenge was making cursor movement feel stable and precise on standard webcams. I approached that with landmark smoothing, gesture threshold tuning, and low-latency local inference so the system stayed responsive without sacrificing accessibility.',
-    tags: ['AI', 'MagicPipe', 'Machine Learning', 'Python', 'OpenCV'],
+    tags: ['AI', 'MediaPipe', 'Machine Learning', 'Python', 'OpenCV'],
     status: 'Completed',
     year: '2024',
-    github: '#',
+    github: null,
     demo: null,
   },
   {
@@ -68,7 +68,7 @@ export const projectsData = [
     tags: ['Ollama', 'LangChain', 'GROQ', 'OLLAMA', 'Python'],
     status: 'Completed',
     year: '2024',
-    github: '#',
+    github: null,
     demo: null,
   },
   {
@@ -100,7 +100,7 @@ export const projectsData = [
     tags: ['Machine Learning', 'Python', 'scikit-learn', 'MongoDB'],
     status: 'Completed',
     year: '2024',
-    github: '#',
+    github: null,
     demo: null,
   },
   {
@@ -132,7 +132,7 @@ export const projectsData = [
     tags: ['Python', 'OpenCV', 'Numpy', 'Matplotlib', 'TensorFlow'],
     status: 'Completed',
     year: '2024',
-    github: '#',
+    github: null,
     demo: null,
   },
   {
@@ -164,7 +164,7 @@ export const projectsData = [
     tags: ['LangChain', 'CrewAI', 'Python', 'LLM'],
     status: 'Completed',
     year: '2024',
-    github: '#',
+    github: null,
     demo: null,
   },
   {
@@ -196,7 +196,7 @@ export const projectsData = [
     tags: ['Python', 'NLP', 'MLflow', 'Docker', 'FastAPI'],
     status: 'Completed',
     year: '2024',
-    github: '#',
+    github: null,
     demo: null,
   },
   {
@@ -228,7 +228,7 @@ export const projectsData = [
     tags: ['TypeScript', 'Finance', 'Modeling', 'M&A'],
     status: 'Completed',
     year: '2025',
-    github: '#',
+    github: null,
     demo: null,
   },
   {
@@ -260,7 +260,7 @@ export const projectsData = [
     tags: ['Retell', 'GoHighLevel', 'Voice AI', 'Automation'],
     status: 'Completed',
     year: '2025',
-    github: '#',
+    github: null,
     demo: null,
   },
   {
@@ -292,7 +292,7 @@ export const projectsData = [
     tags: ['n8n', 'SaaS', 'Discord', 'Webhooks'],
     status: 'Completed',
     year: '2025',
-    github: '#',
+    github: null,
     demo: null,
   },
   {
@@ -324,7 +324,7 @@ export const projectsData = [
     tags: ['n8n', 'LiveKit', 'Voice AI', 'Automation'],
     status: 'Completed',
     year: '2025',
-    github: '#',
+    github: null,
     demo: null,
   },
   {
@@ -356,7 +356,7 @@ export const projectsData = [
     tags: ['n8n', 'PostgreSQL', 'Automation', 'Content Ops'],
     status: 'Completed',
     year: '2025',
-    github: '#',
+    github: null,
     demo: null,
   },
   {
@@ -388,7 +388,7 @@ export const projectsData = [
     tags: ['LiveKit', 'Gemini', 'Flask', 'Voice AI'],
     status: 'Completed',
     year: '2025',
-    github: '#',
+    github: null,
     demo: null,
   },
 ];

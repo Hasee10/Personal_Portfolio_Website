@@ -8,7 +8,14 @@ function formatCategoryBadge(categoryLabel) {
   return categoryLabel || 'Project';
 }
 
+function isAvailableLink(url) {
+  return Boolean(url && url !== '#');
+}
+
 const ProjectGalleryCard = ({ project, detailsHref, compact = false }) => {
+  const hasGithub = isAvailableLink(project.github);
+  const hasDemo = isAvailableLink(project.demo);
+
   return (
     <article
       className={`project-card-shell group ${compact ? 'project-card-shell--compact' : ''}`}
@@ -27,28 +34,32 @@ const ProjectGalleryCard = ({ project, detailsHref, compact = false }) => {
       <div className="project-card">
         <div className={`project-banner ${compact ? 'project-banner--compact' : ''}`}>
           <div className="project-banner__shine" aria-hidden="true" />
-          <div className="project-banner__actions">
-            <a
-              href={project.github}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="project-icon-button"
-              aria-label={`${project.title} GitHub repository`}
-            >
-              <Github className="h-4 w-4" />
-            </a>
-            {project.demo ? (
-              <a
-                href={project.demo}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="project-icon-button"
-                aria-label={`${project.title} live demo`}
-              >
-                <ExternalLink className="h-4 w-4" />
-              </a>
-            ) : null}
-          </div>
+          {hasGithub || hasDemo ? (
+            <div className="project-banner__actions">
+              {hasGithub ? (
+                <a
+                  href={project.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="project-icon-button"
+                  aria-label={`${project.title} GitHub repository`}
+                >
+                  <Github className="h-4 w-4" />
+                </a>
+              ) : null}
+              {hasDemo ? (
+                <a
+                  href={project.demo}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="project-icon-button"
+                  aria-label={`${project.title} live demo`}
+                >
+                  <ExternalLink className="h-4 w-4" />
+                </a>
+              ) : null}
+            </div>
+          ) : null}
           <div className="project-banner__icon">
             <ProjectIcon name={project.icon} className={compact ? 'h-11 w-11' : 'h-12 w-12'} />
           </div>

@@ -9,7 +9,7 @@ const Footer = () => {
     {
       name: 'GitHub',
       icon: <Github className="w-5 h-5" />,
-      url: 'https://github.com/Haseeb10',
+      url: 'https://github.com/Hasee10',
       color: 'hover:text-purple-400'
     },
     {
@@ -21,7 +21,7 @@ const Footer = () => {
     {
       name: 'Email',
       icon: <Mail className="w-5 h-5" />,
-      url: 'mailto:m.ihaseebarshad10@gmail.com',
+      url: 'mailto:ihaseebarshad10@gmail.com',
       color: 'hover:text-pink-400'
     }
   ];

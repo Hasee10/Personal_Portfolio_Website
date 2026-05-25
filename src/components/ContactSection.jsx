@@ -120,8 +120,6 @@ const ContactSection = () => {
     setSubmitError('');
 
     try {
-      // TODO: Replace this Formspree endpoint with your own form ID, or swap this fetch
-      // call for EmailJS once you configure your EmailJS service/template/public key.
       const response = await fetch('https://formspree.io/f/myzevbge', {
         method: 'POST',
         headers: {

@@ -87,7 +87,7 @@ const experiences = [
   },
   {
     role: 'AI Automation Engineer',
-    org: 'Trilles AI', // ← REPLACE with actual company name
+    org: 'Trilles AI',
     period: 'August 2025 - February 2026',
     side: 'right',
     icon: 'brain',
@@ -116,7 +116,7 @@ const experiences = [
     tags: ['LangChain', 'n8n', 'Python', 'RAG', 'LLMs'],
   },
   {
-    role: 'Runner-up - Data Visualization Challenge', // ← REPLACE with actual competition name
+    role: 'Runner-up - Data Visualization Challenge',
     org: 'FAST-NUCES',
     period: 'January 2026',
     side: 'right',

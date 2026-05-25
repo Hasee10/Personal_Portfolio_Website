@@ -191,7 +191,7 @@ This project is licensed under the [MIT License](LICENSE).
 
 ## 📞 Contact
 
-* 📧 **Email**: [m.ihaseebarshad10@gmail.com](mailto:m.ihaseebarshad10@gmail.com)
+* 📧 **Email**: [ihaseebarshad10@gmail.com](mailto:ihaseebarshad10@gmail.com)
 * 💼 **LinkedIn**: [Haseeb Arshad](https://linkedin.com/in/haseeb-arshad)
 * 💻 **GitHub**: [@Hasee10](https://github.com/Hasee10)
 * ✍️ **Medium**: [@ihaseebarshad10](https://medium.com/@ihaseebarshad10)
