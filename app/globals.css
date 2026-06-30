@@ -1,0 +1,57 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-bg:        #090B08;
+  --color-surface:   #101410;
+  --color-surface-2: #161D14;
+  --color-border:    #1C2419;
+  --color-border-2:  #263321;
+  --color-accent:    #4E6B45;
+  --color-accent-2:  #3A5031;
+  --color-text:      #F4E8D0;
+  --color-muted:     #8A9A7E;
+  --color-dim:       #3D4D35;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+/* html holds the base background colour so there is no white flash on load.
+   body is transparent so the fixed Background component (z-index: -1) shows through. */
+html {
+  background-color: var(--color-bg);
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+body {
+  background: transparent;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+.cursor-blink {
+  animation: blink 1s step-end infinite;
+  color: var(--color-accent);
+}
+
+@keyframes bounce-down {
+  0%, 100% { transform: translateY(0);  }
+  50%       { transform: translateY(6px); }
+}
+
+.bounce-down {
+  animation: bounce-down 1.5s ease-in-out infinite;
+}
