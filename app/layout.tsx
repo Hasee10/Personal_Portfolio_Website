@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import { Inter, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
 import Background from '@/components/Background'
-import Cursor from '@/components/Cursor'
 
 const geistSans = Inter({
   variable: '--font-geist-sans',
@@ -31,7 +30,6 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} text-text font-sans antialiased`}
       >
         <Background />
-        <Cursor />
         {children}
       </body>
     </html>
