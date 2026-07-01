@@ -9,13 +9,13 @@ import {
   useMotionTemplate,
   AnimatePresence,
 } from 'framer-motion'
-import { Github } from 'lucide-react'
+import { Github, ExternalLink } from 'lucide-react'
 import { fadeUp, staggerContainer, scaleIn } from '@/lib/motion'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 type Status   = 'PRODUCTION' | 'RESEARCH' | 'OPEN SOURCE'
-type Visual   = 'waveform' | 'document' | 'spider' | 'benchmark' | 'funnel'
+type Visual   = 'waveform' | 'document' | 'spider' | 'benchmark' | 'funnel' | 'rag' | 'pathfinding'
 type Template = 'featured' | 'standard' | 'strip'
 
 interface ProjectData {
@@ -26,6 +26,7 @@ interface ProjectData {
   tags:     string[]
   impact:   string
   github:   string
+  live?:    string
   visual:   Visual
   template: Template
 }
@@ -35,55 +36,89 @@ interface ProjectData {
 const PROJECTS: ProjectData[] = [
   {
     number: '01', name: 'Visa2Land', status: 'PRODUCTION',
-    desc:   'Voice AI platform for Australian visa eligibility. Live with a real migration agency client — handles full eligibility logic across subclasses.',
+    desc:   'Voice AI platform for Australian visa eligibility. Live with a real migration agency client — handles full eligibility logic across subclasses in real-time.',
     tags:   ['VAPI', 'n8n', 'FastAPI', 'React', 'Voice AI'],
-    impact: 'Live client', github: 'https://github.com/Hasee10',
+    impact: 'Live client',
+    github: 'https://github.com/Hasee10',
     visual: 'waveform', template: 'featured',
   },
   {
     number: '02', name: 'ScopeForge', status: 'PRODUCTION',
-    desc:   'Two-pass LLM pipeline generating client-ready SOWs with scoring, diagrams, and psychology-driven rewrites.',
+    desc:   'Two-pass LLM pipeline generating client-ready SOWs with scoring, diagrams, and psychology-driven rewrites. Cuts proposal time from days to under 3 minutes.',
     tags:   ['Gemini', 'Groq', 'Mistral', 'React-PDF'],
-    impact: '2-pass pipeline', github: 'https://github.com/Hasee10',
+    impact: '2-pass pipeline',
+    github: 'https://github.com/Hasee10',
     visual: 'document', template: 'standard',
   },
   {
     number: '03', name: 'NexusDeals', status: 'PRODUCTION',
-    desc:   'Pakistan-focused deal aggregator. 155 sites, 25 Scrapy spiders, Redis caching, live deal feed.',
+    desc:   'Pakistan-focused deal aggregator. 155 sites, 25 Scrapy spiders, Redis caching, live deal feed with sub-second refresh.',
     tags:   ['Next.js', 'FastAPI', 'Supabase', 'Scrapy', 'Redis'],
-    impact: '155 sites', github: 'https://github.com/Hasee10',
+    impact: '155 sites',
+    github: 'https://github.com/Hasee10',
     visual: 'spider', template: 'standard',
   },
   {
     number: '04', name: 'Agent Reliability Auditor', status: 'RESEARCH',
-    desc:   'Benchmarks LLM degradation across English, Roman Urdu, and code-switched inputs. 14 models, 3,000+ prompts.',
+    desc:   'Thesis: systematic LLM degradation benchmarking across English, Roman Urdu, and code-switched inputs. 14 models, 3,000+ prompts, 18–34% accuracy drops identified.',
     tags:   ['Python', 'HuggingFace', 'LangChain', 'NLP'],
-    impact: '3,000+ prompts', github: 'https://github.com/Hasee10',
+    impact: '3,000+ prompts',
+    github: 'https://github.com/Hasee10',
     visual: 'benchmark', template: 'standard',
   },
   {
     number: '05', name: 'VocalCRM', status: 'PRODUCTION',
-    desc:   'Inbound voice AI for real estate lead qualification. Handles screening, objection handling, and CRM push in real-time.',
+    desc:   'Inbound voice AI for real estate lead qualification. Handles screening, objection handling, and CRM push in real-time with no human in the loop.',
     tags:   ['VAPI', 'n8n', 'WebSocket', 'Supabase', 'OpenAI'],
-    impact: 'Real-time CRM', github: 'https://github.com/Hasee10',
+    impact: 'Real-time CRM',
+    github: 'https://github.com/Hasee10',
     visual: 'funnel', template: 'standard',
   },
   {
-    number: '06', name: 'LangGraph Agents', status: 'OPEN SOURCE',
-    desc:   'Modular multi-agent orchestration — research, code review, and web-search agents with shared persistent memory.',
+    number: '06', name: 'NLP-RAG-Agent', status: 'OPEN SOURCE',
+    desc:   'Three-stage NLP system: information extraction → FAISS vector retrieval → sentiment-aware LLM response. Deployed and live on Vercel.',
+    tags:   ['LangChain', 'FAISS', 'OpenAI', 'Next.js', 'TypeScript'],
+    impact: 'Live on Vercel',
+    github: 'https://github.com/Hasee10/NLP-RAG-Agent',
+    live:   'https://rag-sentiment-seven.vercel.app',
+    visual: 'rag', template: 'standard',
+  },
+  {
+    number: '07', name: 'AI Voice Agent — LiveKit', status: 'PRODUCTION',
+    desc:   'Real-time AI voice agent for AutoZone service. Integrates LiveKit transport, Gemini API inference, and a React frontend for sub-200ms round-trip responses.',
+    tags:   ['LiveKit', 'Gemini', 'Flask', 'React', 'Voice AI'],
+    impact: 'Sub-200ms',
+    github: 'https://github.com/Hasee10/AI-Voice-Agent-LiveKit',
+    visual: 'waveform', template: 'standard',
+  },
+  {
+    number: '08', name: 'AeroNet Lite', status: 'RESEARCH',
+    desc:   'Autonomous drone delivery simulation with CSP constraint planning, A* multi-hop routing, and real-time fleet replanning under node failures.',
+    tags:   ['Python', 'A* Search', 'CSP', 'Simulation'],
+    impact: 'Fleet planning',
+    github: 'https://github.com/Hasee10/AeroNet_Lite',
+    visual: 'pathfinding', template: 'standard',
+  },
+  {
+    number: '09', name: 'LangGraph Agents', status: 'OPEN SOURCE',
+    desc:   'Modular multi-agent orchestration — research, code review, and web-search agents with shared persistent memory across sessions.',
     tags:   ['LangGraph', 'OpenAI', 'Tavily', 'FastAPI'],
-    impact: 'Persistent memory', github: 'https://github.com/Hasee10',
+    impact: 'Persistent memory',
+    github: 'https://github.com/Hasee10',
     visual: 'waveform', template: 'strip',
   },
 ]
 
 const COL_CLASSES: Record<string, string> = {
-  'Visa2Land':               'col-span-12 md:col-span-8',
-  'ScopeForge':              'col-span-12 md:col-span-4',
-  'NexusDeals':              'col-span-12 md:col-span-4',
-  'Agent Reliability Auditor': 'col-span-12 md:col-span-4',
-  'VocalCRM':                'col-span-12 md:col-span-4',
-  'LangGraph Agents':        'col-span-12',
+  'Visa2Land':                'col-span-12 md:col-span-8',
+  'ScopeForge':               'col-span-12 md:col-span-4',
+  'NexusDeals':               'col-span-12 md:col-span-4',
+  'Agent Reliability Auditor':'col-span-12 md:col-span-4',
+  'VocalCRM':                 'col-span-12 md:col-span-4',
+  'NLP-RAG-Agent':            'col-span-12 md:col-span-4',
+  'AI Voice Agent — LiveKit': 'col-span-12 md:col-span-4',
+  'AeroNet Lite':             'col-span-12 md:col-span-4',
+  'LangGraph Agents':         'col-span-12',
 }
 
 // ── Config ────────────────────────────────────────────────────────────────────
@@ -95,13 +130,21 @@ const STATUS_CFG: Record<Status, { color: string; bg: string; dot: boolean }> = 
 }
 
 const TAG_COLORS: Record<string, string> = {
+  // LLM / AI
   VAPI: '#CAFF57', Gemini: '#CAFF57', Groq: '#CAFF57', Mistral: '#CAFF57',
   OpenAI: '#CAFF57', LangChain: '#CAFF57', LangGraph: '#CAFF57',
-  HuggingFace: '#CAFF57', 'Voice AI': '#CAFF57',
+  HuggingFace: '#CAFF57', 'Voice AI': '#CAFF57', LiveKit: '#CAFF57',
+  FAISS: '#CAFF57',
+  // Infra / backend
   n8n: '#57FFD8', FastAPI: '#57FFD8', WebSocket: '#57FFD8', Tavily: '#57FFD8',
+  Flask: '#57FFD8',
+  // Data / algo
   Supabase: '#FFD657', Redis: '#FFD657', Scrapy: '#FFD657',
-  Python: '#FFD657', NLP: '#FFD657',
+  Python: '#FFD657', NLP: '#FFD657', 'A* Search': '#FFD657',
+  CSP: '#FFD657', Simulation: '#FFD657',
+  // Frontend
   React: '#FF9557', 'Next.js': '#FF9557', 'React-PDF': '#FF9557',
+  TypeScript: '#FF9557',
 }
 
 const MONO = "'Courier New', monospace"
@@ -142,7 +185,7 @@ function TagPill({ tag }: { tag: string }) {
   )
 }
 
-// ── SVG Visual components ─────────────────────────────────────────────────────
+// ── SVG Visuals ────────────────────────────────────────────────────────────────
 
 function WaveformVisual({ hovered, inView }: { hovered: boolean; inView: boolean }) {
   const bars = [20, 35, 55, 42, 70, 88, 60, 45, 72, 50, 38, 25]
@@ -155,9 +198,7 @@ function WaveformVisual({ hovered, inView }: { hovered: boolean; inView: boolean
         const x    = 18 + i * 22
         return (
           <motion.rect
-            key={i}
-            x={x} width={4} rx={2}
-            fill="#CAFF57"
+            key={i} x={x} width={4} rx={2} fill="#CAFF57"
             fillOpacity={0.35 + (i % 3) * 0.2}
             animate={inView ? {
               height: [minH, maxH, minH],
@@ -176,12 +217,8 @@ function WaveformVisual({ hovered, inView }: { hovered: boolean; inView: boolean
 
 function DocumentVisual({ hovered, inView }: { hovered: boolean; inView: boolean }) {
   const lines = [
-    { width: 190, y: 12 },
-    { width: 148, y: 26 },
-    { width: 210, y: 40 },
-    { width: 168, y: 54 },
-    { width: 126, y: 68 },
-    { width:  98, y: 82 },
+    { width: 190, y: 12 }, { width: 148, y: 26 }, { width: 210, y: 40 },
+    { width: 168, y: 54 }, { width: 126, y: 68 }, { width:  98, y: 82 },
   ]
   const spd = hovered ? 0.55 : 1
   const [cursorOn, setCursorOn] = useState(true)
@@ -196,8 +233,7 @@ function DocumentVisual({ hovered, inView }: { hovered: boolean; inView: boolean
     <svg viewBox="0 0 300 100" width="100%" height="100%" aria-hidden="true">
       {lines.map((line, i) => (
         <motion.rect
-          key={i}
-          x={16} y={line.y} height={2} rx={1}
+          key={i} x={16} y={line.y} height={2} rx={1}
           fill={i === 2 ? '#CAFF57' : '#3A4A28'}
           fillOpacity={i === 2 ? 1 : 0.6}
           animate={inView
@@ -217,7 +253,7 @@ function DocumentVisual({ hovered, inView }: { hovered: boolean; inView: boolean
 }
 
 function SpiderVisual({ hovered, inView }: { hovered: boolean; inView: boolean }) {
-  const CX = 150, CY = 50, R = 40
+  const CX = 150, CY = 50, R = 38
   const spd = hovered ? 0.6 : 1
   const nodes = Array.from({ length: 5 }, (_, i) => {
     const a = (i / 5) * Math.PI * 2 - Math.PI / 2
@@ -232,9 +268,7 @@ function SpiderVisual({ hovered, inView }: { hovered: boolean; inView: boolean }
           x1={CX} y1={CY} x2={nd.x} y2={nd.y}
           stroke="#CAFF57" strokeWidth="0.8" strokeOpacity={0.55}
           strokeDasharray={R}
-          animate={inView
-            ? { strokeDashoffset: [R, 0, 0, R] }
-            : { strokeDashoffset: R }}
+          animate={inView ? { strokeDashoffset: [R, 0, 0, R] } : { strokeDashoffset: R }}
           transition={inView ? {
             duration: 2.4 * spd, times: [0, 0.3, 0.8, 1],
             repeat: Infinity, delay: i * 0.28,
@@ -242,9 +276,7 @@ function SpiderVisual({ hovered, inView }: { hovered: boolean; inView: boolean }
         />
       ))}
       <circle cx={CX} cy={CY} r={9} fill="#CAFF57" fillOpacity={0.12} stroke="#CAFF57" strokeWidth={1} />
-      <text x={CX} y={CY + 1} textAnchor="middle" dominantBaseline="middle" fill="#CAFF57" fontSize={6.5} fontFamily={MONO}>
-        AI
-      </text>
+      <text x={CX} y={CY + 1} textAnchor="middle" dominantBaseline="middle" fill="#CAFF57" fontSize={6.5} fontFamily={MONO}>AI</text>
       {nodes.map((nd, i) => (
         <circle key={`n${i}`} cx={nd.x} cy={nd.y} r={4} fill="#CAFF57" fillOpacity={0.6} />
       ))}
@@ -279,27 +311,20 @@ function BenchmarkVisual({ inView }: { hovered: boolean; inView: boolean }) {
   return (
     <svg viewBox="0 0 300 100" width="100%" height="100%" aria-hidden="true">
       {Array.from({ length: BENCH_TOTAL }, (_, i) => {
-        const col    = i % COLS
-        const row    = Math.floor(i / COLS)
+        const col    = i % COLS, row = Math.floor(i / COLS)
         const filled = (tick > i && tick <= BENCH_TOTAL) || tick > BENCH_TOTAL
         const isPass = PASS_SET.has(i)
         return (
           <motion.rect
             key={i}
-            x={OX + col * (SQ + GAP)}
-            y={OY + row * (SQ + GAP)}
+            x={OX + col * (SQ + GAP)} y={OY + row * (SQ + GAP)}
             width={SQ} height={SQ} rx={2}
-            animate={{
-              fill:        filled ? (isPass ? '#CAFF57' : '#FF4757') : '#181C12',
-              fillOpacity: filled ? 0.85 : 0.4,
-            }}
+            animate={{ fill: filled ? (isPass ? '#CAFF57' : '#FF4757') : '#181C12', fillOpacity: filled ? 0.85 : 0.4 }}
             transition={{ duration: 0.18 }}
           />
         )
       })}
-      <text x={290} y={92} textAnchor="end" fill="#3A4A28" fontSize={8.5} fontFamily={MONO}>
-        PASS RATE: 87%
-      </text>
+      <text x={290} y={92} textAnchor="end" fill="#3A4A28" fontSize={8.5} fontFamily={MONO}>PASS RATE: 87%</text>
     </svg>
   )
 }
@@ -310,11 +335,7 @@ function FunnelVisual({ inView }: { hovered: boolean; inView: boolean }) {
   useEffect(() => {
     if (!inView) return
     let n = 0
-    const id = setInterval(() => {
-      n++
-      setCount(n)
-      if (n >= 47) clearInterval(id)
-    }, 28)
+    const id = setInterval(() => { n++; setCount(n); if (n >= 47) clearInterval(id) }, 28)
     return () => clearInterval(id)
   }, [inView])
 
@@ -335,28 +356,160 @@ function FunnelVisual({ inView }: { hovered: boolean; inView: boolean }) {
             animate={inView ? { width: [0, s.w] } : { width: s.w * 0.15 }}
             transition={inView ? { duration: 0.8, delay: i * 0.18, ease: 'easeOut' } : { duration: 0 }}
           />
-          <text x={182} y={s.y + 8} fill={s.accent ? '#CAFF57' : '#3A4A28'} fontSize={8} fontFamily={MONO}>
-            {s.label}
-          </text>
+          <text x={182} y={s.y + 8} fill={s.accent ? '#CAFF57' : '#3A4A28'} fontSize={8} fontFamily={MONO}>{s.label}</text>
         </g>
       ))}
-      <text x={292} y={78} textAnchor="end" fill="#CAFF57" fontSize={11} fontFamily={MONO} fontWeight="600">
-        {count}
-      </text>
-      <text x={292} y={88} textAnchor="end" fill="#3A4A28" fontSize={7} fontFamily={MONO}>
-        DEALS CLOSED
-      </text>
+      <text x={292} y={78} textAnchor="end" fill="#CAFF57" fontSize={11} fontFamily={MONO} fontWeight="600">{count}</text>
+      <text x={292} y={88} textAnchor="end" fill="#3A4A28" fontSize={7} fontFamily={MONO}>DEALS CLOSED</text>
+    </svg>
+  )
+}
+
+// RAG pipeline: QUERY → VECTORS → LLM → ANSWER
+function RAGVisual({ hovered, inView }: { hovered: boolean; inView: boolean }) {
+  const spd = hovered ? 0.6 : 1
+
+  return (
+    <svg viewBox="0 0 300 100" width="100%" height="100%" aria-hidden="true">
+      {/* Stage 1: QUERY box */}
+      <rect x="8" y="33" width="46" height="24" rx="4" fill="#CAFF57" fillOpacity="0.06" stroke="#CAFF57" strokeWidth="0.8" strokeOpacity="0.5" />
+      <text x="31" y="47" textAnchor="middle" dominantBaseline="middle" fill="#CAFF57" fontSize="7" fontFamily={MONO}>QUERY</text>
+
+      {/* Connector arrow 1 */}
+      <line x1="54" y1="45" x2="84" y2="45" stroke="#3A4A28" strokeWidth="0.8" />
+      <polygon points="84,45 80,42.5 80,47.5" fill="#3A4A28" />
+
+      {/* Stage 2: Vector cluster */}
+      {[[102,30],[116,42],[108,55],[126,38],[120,62],[136,50]].map(([x, y], i) => (
+        <motion.circle key={i} cx={x} cy={y} r={3.5}
+          fill="#57FFD8" fillOpacity={0.65}
+          animate={inView ? { fillOpacity: [0.3, 0.85, 0.3], r: [3, 4.2, 3] } : {}}
+          transition={{ duration: 1.6, repeat: Infinity, delay: i * 0.22, ease: 'easeInOut' }}
+        />
+      ))}
+      <text x="119" y="90" textAnchor="middle" fill="#3A4A28" fontSize="6.5" fontFamily={MONO}>FAISS VECTORS</text>
+
+      {/* Connector arrow 2 */}
+      <line x1="148" y1="45" x2="178" y2="45" stroke="#3A4A28" strokeWidth="0.8" />
+      <polygon points="178,45 174,42.5 174,47.5" fill="#3A4A28" />
+
+      {/* Stage 3: LLM circle */}
+      <circle cx="210" cy="45" r="24" fill="#CAFF57" fillOpacity="0.05" stroke="#CAFF57" strokeWidth="0.8" />
+      <text x="210" y="41" textAnchor="middle" dominantBaseline="middle" fill="#CAFF57" fontSize="7" fontFamily={MONO}>LLM</text>
+      <text x="210" y="52" textAnchor="middle" dominantBaseline="middle" fill="#CAFF57" fontSize="5.5" fontFamily={MONO} fillOpacity="0.6">MODEL</text>
+
+      {/* Output lines */}
+      {[[254, 34, 32], [254, 43, 26], [254, 52, 20]].map(([x, y, w], i) => (
+        <motion.rect key={i}
+          x={x} y={y} height={2} rx={1} fill="#CAFF57"
+          fillOpacity={0.55 - i * 0.12}
+          animate={inView ? { width: [0, w] } : { width: 0 }}
+          transition={inView ? {
+            duration: 0.55, delay: 0.3 + i * 0.22,
+            repeat: Infinity, repeatDelay: 1.8, ease: 'easeOut',
+          } : { duration: 0 }}
+        />
+      ))}
+      <text x="254" y="65" fill="#3A4A28" fontSize="6.5" fontFamily={MONO}>ANSWER</text>
+
+      {/* Animated retrieval dot */}
+      {inView && (
+        <motion.circle r="3.5" fill="#CAFF57" fillOpacity="0.9"
+          animate={{
+            cx: [31, 31, 119, 210, 210],
+            cy: [45, 45,  45,  45,  45],
+            opacity: [0, 1, 1, 1, 0],
+          }}
+          transition={{ duration: 2.0 * spd, repeat: Infinity, repeatDelay: 0.4, ease: 'easeInOut', times: [0, 0.05, 0.45, 0.85, 1] }}
+        />
+      )}
+    </svg>
+  )
+}
+
+// A* drone routing simulation
+const DRONE_WPS = [
+  [16, 50], [48, 50], [72, 72], [112, 72], [142, 50],
+  [172, 50], [194, 28], [228, 28], [254, 50], [284, 50],
+] as [number, number][]
+
+function PathfindingVisual({ hovered, inView }: { hovered: boolean; inView: boolean }) {
+  const spd = hovered ? 0.6 : 1
+  const pathD = DRONE_WPS.map(([x, y], i) => `${i === 0 ? 'M' : 'L'} ${x} ${y}`).join(' ')
+
+  const walls = [
+    { x: 54, y: 36, w: 11, h: 28 },
+    { x: 148, y: 36, w: 11, h: 28 },
+    { x: 180, y: 46, w: 11, h: 30 },
+  ]
+
+  // Dot grid background
+  const dots: [number, number][] = []
+  for (let row = 0; row < 4; row++) {
+    for (let col = 0; col < 10; col++) {
+      dots.push([col * 28 + 18, row * 22 + 16])
+    }
+  }
+
+  return (
+    <svg viewBox="0 0 300 100" width="100%" height="100%" aria-hidden="true">
+      {/* Dot grid */}
+      {dots.map(([x, y], i) => (
+        <circle key={i} cx={x} cy={y} r={1.5} fill="#3A4A28" fillOpacity={0.45} />
+      ))}
+
+      {/* Obstacle blocks */}
+      {walls.map((w, i) => (
+        <g key={i}>
+          <rect x={w.x} y={w.y} width={w.w} height={w.h} rx={2}
+            fill="#FF4757" fillOpacity={0.1} stroke="#FF4757" strokeWidth="0.8" strokeOpacity={0.35} />
+          <text x={w.x + w.w / 2} y={w.y + w.h / 2 + 1} textAnchor="middle" dominantBaseline="middle"
+            fill="#FF4757" fontSize={5} fontFamily={MONO} fillOpacity={0.6}>WALL</text>
+        </g>
+      ))}
+
+      {/* Path */}
+      <motion.path
+        d={pathD} fill="none" stroke="#CAFF57" strokeWidth="1.5"
+        strokeDasharray="5 3"
+        animate={inView ? { pathLength: [0, 1] } : { pathLength: 0 }}
+        transition={{ duration: 2.4 * spd, ease: 'easeInOut', repeat: Infinity, repeatDelay: 0.7 }}
+      />
+
+      {/* Start marker */}
+      <circle cx={DRONE_WPS[0][0]} cy={DRONE_WPS[0][1]} r={5} fill="none" stroke="#57FFD8" strokeWidth={1.5} />
+      {/* End marker */}
+      <circle cx={DRONE_WPS[DRONE_WPS.length - 1][0]} cy={DRONE_WPS[DRONE_WPS.length - 1][1]} r={5} fill="#CAFF57" fillOpacity={0.25} stroke="#CAFF57" strokeWidth={1.5} />
+
+      {/* Drone dot */}
+      {inView && (
+        <motion.circle r={4.5} fill="#CAFF57"
+          animate={{
+            cx: DRONE_WPS.map(p => p[0]),
+            cy: DRONE_WPS.map(p => p[1]),
+          }}
+          transition={{
+            duration: 2.4 * spd, ease: 'easeInOut',
+            repeat: Infinity, repeatDelay: 0.7,
+            times: DRONE_WPS.map((_, i) => i / (DRONE_WPS.length - 1)),
+          }}
+        />
+      )}
+
+      <text x="6" y="95" fill="#3A4A28" fontSize="7" fontFamily={MONO}>A* ROUTING · FLEET REPLANNING</text>
     </svg>
   )
 }
 
 function ProjectVisual({ type, hovered, inView }: { type: Visual; hovered: boolean; inView: boolean }) {
   switch (type) {
-    case 'waveform':  return <WaveformVisual  hovered={hovered} inView={inView} />
-    case 'document':  return <DocumentVisual  hovered={hovered} inView={inView} />
-    case 'spider':    return <SpiderVisual    hovered={hovered} inView={inView} />
-    case 'benchmark': return <BenchmarkVisual hovered={hovered} inView={inView} />
-    case 'funnel':    return <FunnelVisual    hovered={hovered} inView={inView} />
+    case 'waveform':     return <WaveformVisual     hovered={hovered} inView={inView} />
+    case 'document':     return <DocumentVisual     hovered={hovered} inView={inView} />
+    case 'spider':       return <SpiderVisual       hovered={hovered} inView={inView} />
+    case 'benchmark':    return <BenchmarkVisual    hovered={hovered} inView={inView} />
+    case 'funnel':       return <FunnelVisual       hovered={hovered} inView={inView} />
+    case 'rag':          return <RAGVisual          hovered={hovered} inView={inView} />
+    case 'pathfinding':  return <PathfindingVisual  hovered={hovered} inView={inView} />
   }
 }
 
@@ -365,13 +518,10 @@ function ProjectVisual({ type, hovered, inView }: { type: Visual; hovered: boole
 function FlowGraph() {
   const LINE = 14
   return (
-    <svg
-      viewBox="0 0 72 16" width="72" height="16" aria-hidden="true"
-      style={{ display: 'inline-block', verticalAlign: 'middle', flexShrink: 0 }}
-    >
+    <svg viewBox="0 0 72 16" width="72" height="16" aria-hidden="true"
+      style={{ display: 'inline-block', verticalAlign: 'middle', flexShrink: 0 }}>
       {[{ x1: 14, x2: 28 }, { x1: 43, x2: 57 }].map((seg, i) => (
-        <motion.line
-          key={i}
+        <motion.line key={i}
           x1={seg.x1} y1={8} x2={seg.x2} y2={8}
           stroke="#CAFF57" strokeWidth={1.5}
           strokeDasharray={LINE}
@@ -412,23 +562,18 @@ function TiltCard({ children, className, disabled }: { children: ReactNode; clas
     if (!hov) setHov(true)
   }
 
-  function onLeave() {
-    rotX.set(0); rotY.set(0); setHov(false)
-  }
+  function onLeave() { rotX.set(0); rotY.set(0); setHov(false) }
 
   return (
     <motion.div
-      ref={ref}
-      className={`relative overflow-hidden ${className ?? ''}`}
+      ref={ref} className={`relative overflow-hidden ${className ?? ''}`}
       style={{ rotateX: sX, rotateY: sY, transformPerspective: 900 }}
-      onMouseMove={onMove}
-      onMouseLeave={onLeave}
+      onMouseMove={onMove} onMouseLeave={onLeave}
     >
       {children}
       <AnimatePresence>
         {!disabled && hov && (
-          <motion.div
-            aria-hidden="true"
+          <motion.div aria-hidden="true"
             className="pointer-events-none absolute inset-0"
             style={{ background: glare }}
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
@@ -440,7 +585,7 @@ function TiltCard({ children, className, disabled }: { children: ReactNode; clas
   )
 }
 
-// ── Card templates ────────────────────────────────────────────────────────────
+// ── Card components ───────────────────────────────────────────────────────────
 
 function CardMeta({ project }: { project: ProjectData }) {
   return (
@@ -448,7 +593,18 @@ function CardMeta({ project }: { project: ProjectData }) {
       <span style={{ fontFamily: MONO, fontSize: '11px', color: 'var(--color-dim)', letterSpacing: '0.08em' }}>
         {project.number}
       </span>
-      <StatusBadge status={project.status} />
+      <div className="flex items-center gap-2">
+        {project.live && (
+          <span style={{
+            fontSize: '8px', fontFamily: MONO, color: '#4ADE80',
+            border: '1px solid rgba(74,222,128,0.3)', background: 'rgba(74,222,128,0.06)',
+            padding: '2px 6px', borderRadius: '999px', letterSpacing: '0.12em',
+          }}>
+            LIVE
+          </span>
+        )}
+        <StatusBadge status={project.status} />
+      </div>
     </div>
   )
 }
@@ -456,12 +612,18 @@ function CardMeta({ project }: { project: ProjectData }) {
 function CardFooter({ project }: { project: ProjectData }) {
   return (
     <div className="flex items-center gap-4 border-t border-border pt-3">
-      <a
-        href={project.github} target="_blank" rel="noopener noreferrer"
+      <a href={project.github} target="_blank" rel="noopener noreferrer"
         className="flex items-center gap-1.5 text-[12px] text-muted transition-colors hover:text-accent"
-      >
+        onClick={e => e.stopPropagation()}>
         <Github size={11} /> GitHub ↗
       </a>
+      {project.live && (
+        <a href={project.live} target="_blank" rel="noopener noreferrer"
+          className="flex items-center gap-1.5 text-[12px] text-muted transition-colors hover:text-accent"
+          onClick={e => e.stopPropagation()}>
+          <ExternalLink size={11} /> Live ↗
+        </a>
+      )}
       <span style={{ marginLeft: 'auto', fontSize: '10px', fontFamily: MONO, color: 'var(--color-dim)', letterSpacing: '0.06em' }}>
         {project.impact}
       </span>
@@ -471,6 +633,7 @@ function CardFooter({ project }: { project: ProjectData }) {
 
 function FeaturedCard({ project, inView, reduced }: { project: ProjectData; inView: boolean; reduced: boolean }) {
   const [hovered, setHovered] = useState(false)
+  const primaryUrl = project.live ?? project.github
   return (
     <TiltCard disabled={reduced} className="h-full">
       <motion.article
@@ -481,14 +644,16 @@ function FeaturedCard({ project, inView, reduced }: { project: ProjectData; inVi
         whileHover={{ borderColor: 'rgba(202,255,87,0.32)' }}
         transition={{ duration: 0.22 }}
       >
-        <div style={{
-          height: 140, overflow: 'hidden',
-          borderRadius: '12px 12px 0 0',
-          borderBottom: '1px solid var(--color-border)',
-          background: 'var(--color-surface-2)',
-        }}>
-          <ProjectVisual type={project.visual} hovered={hovered} inView={inView} />
-        </div>
+        <a href={primaryUrl} target="_blank" rel="noopener noreferrer" className="block" tabIndex={-1} aria-hidden="true">
+          <div style={{
+            height: 140, overflow: 'hidden',
+            borderRadius: '12px 12px 0 0',
+            borderBottom: '1px solid var(--color-border)',
+            background: 'var(--color-surface-2)',
+          }}>
+            <ProjectVisual type={project.visual} hovered={hovered} inView={inView} />
+          </div>
+        </a>
         <div className="flex flex-1 flex-col gap-3 p-5">
           <CardMeta project={project} />
           <h3 className="text-[18px] font-semibold text-text">{project.name}</h3>
@@ -499,13 +664,15 @@ function FeaturedCard({ project, inView, reduced }: { project: ProjectData; inVi
           <CardFooter project={project} />
           <AnimatePresence>
             {hovered && (
-              <motion.p
+              <motion.a
+                href={primaryUrl} target="_blank" rel="noopener noreferrer"
                 initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 4 }}
                 transition={{ duration: 0.2 }}
                 style={{ fontSize: '10px', fontFamily: MONO, color: '#CAFF57', letterSpacing: '0.14em', marginTop: 2 }}
+                onClick={e => e.stopPropagation()}
               >
                 VIEW PROJECT ↗
-              </motion.p>
+              </motion.a>
             )}
           </AnimatePresence>
         </div>
@@ -516,6 +683,7 @@ function FeaturedCard({ project, inView, reduced }: { project: ProjectData; inVi
 
 function StandardCard({ project, inView, reduced }: { project: ProjectData; inView: boolean; reduced: boolean }) {
   const [hovered, setHovered] = useState(false)
+  const primaryUrl = project.live ?? project.github
   return (
     <TiltCard disabled={reduced} className="h-full">
       <motion.article
@@ -526,14 +694,16 @@ function StandardCard({ project, inView, reduced }: { project: ProjectData; inVi
         whileHover={{ borderColor: 'rgba(202,255,87,0.32)' }}
         transition={{ duration: 0.22 }}
       >
-        <div style={{
-          height: 80, overflow: 'hidden',
-          borderRadius: '12px 12px 0 0',
-          borderBottom: '1px solid var(--color-border)',
-          background: 'var(--color-surface-2)',
-        }}>
-          <ProjectVisual type={project.visual} hovered={hovered} inView={inView} />
-        </div>
+        <a href={primaryUrl} target="_blank" rel="noopener noreferrer" className="block" tabIndex={-1} aria-hidden="true">
+          <div style={{
+            height: 80, overflow: 'hidden',
+            borderRadius: '12px 12px 0 0',
+            borderBottom: '1px solid var(--color-border)',
+            background: 'var(--color-surface-2)',
+          }}>
+            <ProjectVisual type={project.visual} hovered={hovered} inView={inView} />
+          </div>
+        </a>
         <div className="flex flex-1 flex-col gap-2 p-4">
           <CardMeta project={project} />
           <h3 className="text-[16px] font-semibold text-text">{project.name}</h3>
@@ -544,13 +714,15 @@ function StandardCard({ project, inView, reduced }: { project: ProjectData; inVi
           <CardFooter project={project} />
           <AnimatePresence>
             {hovered && (
-              <motion.p
+              <motion.a
+                href={primaryUrl} target="_blank" rel="noopener noreferrer"
                 initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 4 }}
                 transition={{ duration: 0.2 }}
                 style={{ fontSize: '10px', fontFamily: MONO, color: '#CAFF57', letterSpacing: '0.14em', marginTop: 2 }}
+                onClick={e => e.stopPropagation()}
               >
                 VIEW PROJECT ↗
-              </motion.p>
+              </motion.a>
             )}
           </AnimatePresence>
         </div>
@@ -573,7 +745,7 @@ function StripCard({ project }: { project: ProjectData }) {
       }}
       transition={{ duration: 0.2 }}
     >
-      <div className="flex flex-wrap items-center gap-2 md:min-w-[260px]">
+      <div className="flex flex-wrap items-center gap-2 md:min-w-[280px]">
         <span style={{ fontFamily: MONO, fontSize: '11px', color: 'var(--color-dim)', letterSpacing: '0.08em' }}>
           {project.number}
         </span>
@@ -584,12 +756,16 @@ function StripCard({ project }: { project: ProjectData }) {
       <p className="flex-1 text-[13px] text-muted">{project.desc}</p>
       <div className="flex flex-wrap items-center gap-2 md:min-w-[220px] md:justify-end">
         {project.tags.slice(0, 3).map(t => <TagPill key={t} tag={t} />)}
-        <a
-          href={project.github} target="_blank" rel="noopener noreferrer"
-          className="ml-2 flex items-center gap-1 text-[12px] text-muted transition-colors hover:text-accent"
-        >
+        <a href={project.github} target="_blank" rel="noopener noreferrer"
+          className="ml-2 flex items-center gap-1 text-[12px] text-muted transition-colors hover:text-accent">
           <Github size={11} /> GitHub ↗
         </a>
+        {project.live && (
+          <a href={project.live} target="_blank" rel="noopener noreferrer"
+            className="flex items-center gap-1 text-[12px] text-muted transition-colors hover:text-accent">
+            <ExternalLink size={11} /> Live ↗
+          </a>
+        )}
       </div>
     </motion.article>
   )
@@ -602,11 +778,7 @@ function CardWrapper({ project, colClass, reduced }: { project: ProjectData; col
   const inView = useInView(ref, { once: true, margin: '-60px' })
 
   return (
-    <motion.div
-      ref={ref}
-      className={colClass}
-      variants={reduced ? undefined : scaleIn}
-    >
+    <motion.div ref={ref} className={colClass} variants={reduced ? undefined : scaleIn}>
       {project.template === 'featured' && <FeaturedCard  project={project} inView={inView} reduced={reduced} />}
       {project.template === 'standard' && <StandardCard  project={project} inView={inView} reduced={reduced} />}
       {project.template === 'strip'    && <StripCard     project={project} />}
@@ -655,7 +827,7 @@ export default function Projects() {
             </span>
           ))}
           <span style={{ marginLeft: 'auto', fontSize: '10px', fontFamily: MONO, color: 'var(--color-dim)' }}>
-            6 projects
+            {PROJECTS.length} projects
           </span>
         </motion.div>
 

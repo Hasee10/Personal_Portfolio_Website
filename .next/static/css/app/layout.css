@@ -1542,6 +1542,10 @@ body {
     min-width: 260px;
   }
 
+  .md\:min-w-\[280px\] {
+    min-width: 280px;
+  }
+
   .md\:grid-cols-3 {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
