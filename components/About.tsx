@@ -2,16 +2,21 @@
 
 import { useRef, useEffect } from 'react'
 import { motion, useInView } from 'framer-motion'
-import { fadeUp, staggerContainer } from '@/lib/motion'
+import { fadeUp, scaleIn, staggerContainer, easeOutExpo } from '@/lib/motion'
 import { META, STATS } from '@/lib/constants'
 
-/* Animated counting number */
+/* ── Animated counter ──────────────────────────────────────────────────────
+ * rAF-based ease-out cubic interpolation. On completion, flashes a brief
+ * accent underline to punctuate the number's arrival.
+ */
 function Counter({ target, suffix }: { target: number; suffix: string }) {
-  const ref = useRef<HTMLSpanElement>(null)
-  const inView = useInView(ref, { once: true, margin: '-80px' })
+  const ref     = useRef<HTMLSpanElement>(null)
+  const lineRef = useRef<HTMLSpanElement>(null)
+  const inView  = useInView(ref, { once: true, margin: '-80px' })
 
   useEffect(() => {
-    const el = ref.current
+    const el   = ref.current
+    const line = lineRef.current
     if (!inView || !el) return
 
     const reduced =
@@ -24,19 +29,40 @@ function Counter({ target, suffix }: { target: number; suffix: string }) {
     }
 
     const start    = performance.now()
-    const duration = 1500
+    const duration = 1400
 
     const tick = (now: number) => {
       const progress = Math.min((now - start) / duration, 1)
       const eased    = 1 - Math.pow(1 - progress, 3)
       el.textContent = String(Math.round(eased * target)) + suffix
-      if (progress < 1) requestAnimationFrame(tick)
+
+      if (progress < 1) {
+        requestAnimationFrame(tick)
+      } else if (line) {
+        // Brief accent flash on completion
+        line.style.transition = 'width 0.3s ease-out, opacity 0.4s 0.25s ease-in'
+        line.style.width   = '100%'
+        line.style.opacity = '0.6'
+        setTimeout(() => {
+          if (line) { line.style.width = '0%'; line.style.opacity = '0' }
+        }, 600)
+      }
     }
 
     requestAnimationFrame(tick)
   }, [inView, target, suffix])
 
-  return <span ref={ref}>0{suffix}</span>
+  return (
+    <span className="relative inline-block">
+      <span ref={ref}>0{suffix}</span>
+      {/* Flash underline — animated via inline styles on counter completion */}
+      <span
+        ref={lineRef}
+        className="absolute bottom-1 left-0 h-px bg-accent"
+        style={{ width: '0%', opacity: 0 }}
+      />
+    </span>
+  )
 }
 
 export default function About() {
@@ -57,7 +83,7 @@ export default function About() {
           animate={inView ? 'visible' : 'hidden'}
           className="flex flex-col gap-12 lg:flex-row lg:gap-20"
         >
-          {/* Bio */}
+          {/* Bio column */}
           <motion.div
             variants={reduced ? undefined : fadeUp}
             className="flex flex-[1.2] flex-col gap-6"
@@ -67,11 +93,20 @@ export default function About() {
               Who I am.
             </h2>
             <p className="text-[16px] leading-[1.7] text-muted">{META.bio}</p>
+
+            {/* Subtle accent rule that draws in */}
+            <motion.div
+              className="h-px w-12 bg-accent/40"
+              initial={reduced ? {} : { scaleX: 0, originX: 0 }}
+              animate={inView ? { scaleX: 1 } : { scaleX: 0 }}
+              style={{ transformOrigin: 'left' }}
+              transition={{ duration: 0.8, ease: easeOutExpo, delay: 0.5 }}
+            />
           </motion.div>
 
-          {/* Stats */}
+          {/* Stats column — scale-in for dimensional entry */}
           <motion.div
-            variants={reduced ? undefined : fadeUp}
+            variants={reduced ? undefined : scaleIn}
             className="flex flex-[0.8] flex-col divide-y divide-border"
           >
             {STATS.map((stat, i) => (

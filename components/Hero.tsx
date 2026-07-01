@@ -5,6 +5,7 @@ import { motion, useMotionValue, useSpring } from 'framer-motion'
 import { ArrowDown } from 'lucide-react'
 import { META } from '@/lib/constants'
 import { fadeUp, fadeIn, easeOutExpo } from '@/lib/motion'
+import NodeGraph3D from '@/components/NodeGraph3D'
 
 /* ── Magnetic button ───────────────────────────────────────────────────────
  * Tracks the cursor within the button's bounding box and applies a fractional
@@ -265,9 +266,22 @@ export default function Hero() {
             </motion.div>
           </div>
 
-          {/* ── Right column: SVG node graph ───────── */}
+          {/* ── Right column: 3-D canvas node graph ─── */}
           <div className="hidden items-center justify-center lg:flex lg:w-[40%]">
-            <NodeGraph reduced={reduced} />
+            <div className="relative flex items-center justify-center">
+              {/* Soft ambient glow behind the graph */}
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute rounded-full"
+                style={{
+                  width: '480px',
+                  height: '480px',
+                  background: 'radial-gradient(ellipse at center, rgba(78,107,69,0.10) 0%, rgba(78,107,69,0.03) 50%, transparent 75%)',
+                  filter: 'blur(24px)',
+                }}
+              />
+              <NodeGraph3D reduced={reduced} />
+            </div>
           </div>
 
         </div>

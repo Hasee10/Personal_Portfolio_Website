@@ -2,8 +2,8 @@
 
 import { useRef } from 'react'
 import { motion, useInView } from 'framer-motion'
-import { staggerContainer, staggerTight, fadeUp, fadeIn } from '@/lib/motion'
-import { SKILLS } from '@/lib/constants'
+import { fadeUp } from '@/lib/motion'
+import SkillSphere from '@/components/SkillSphere'
 
 export default function Skills() {
   const ref    = useRef<HTMLElement>(null)
@@ -31,49 +31,13 @@ export default function Skills() {
           </h2>
         </motion.div>
 
-        {/* Skill rows — each row staggers, each pill staggers within the row */}
+        {/* 3-D rotating skill torus */}
         <motion.div
-          variants={reduced ? undefined : staggerContainer}
+          variants={reduced ? undefined : fadeUp}
           initial={reduced ? undefined : 'hidden'}
           animate={inView ? 'visible' : 'hidden'}
-          className="flex flex-col"
         >
-          {SKILLS.map((skill) => (
-            <motion.div
-              key={skill.category}
-              variants={reduced ? undefined : fadeUp}
-              className="group relative flex flex-col gap-4 border-t border-border py-6 sm:flex-row sm:items-start sm:gap-8"
-            >
-              {/* Accent side bar — appears on hover */}
-              <motion.div
-                className="absolute left-0 top-0 h-full w-0.5 bg-accent"
-                initial={{ opacity: 0 }}
-                whileHover={reduced ? {} : { opacity: 1 }}
-                transition={{ duration: 0.15 }}
-              />
-
-              {/* Category label */}
-              <div className="w-full shrink-0 pl-3 sm:w-40">
-                <span className="font-mono text-[14px] text-text">{skill.category}</span>
-              </div>
-
-              {/* Pills — tight stagger within each row */}
-              <motion.div
-                className="flex flex-wrap gap-2 pl-3 sm:pl-0"
-                variants={reduced ? undefined : staggerTight}
-              >
-                {skill.items.map((item) => (
-                  <motion.span
-                    key={item}
-                    variants={reduced ? undefined : fadeIn}
-                    className="rounded-full border border-border bg-surface px-3 py-1 text-[11px] text-muted transition-colors duration-150 group-hover:text-text"
-                  >
-                    {item}
-                  </motion.span>
-                ))}
-              </motion.div>
-            </motion.div>
-          ))}
+          <SkillSphere reduced={reduced} />
         </motion.div>
       </div>
     </section>
