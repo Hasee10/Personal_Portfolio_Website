@@ -6,7 +6,7 @@ export const META = {
   email:    'ihaseebarshad10@gmail.com',
   linkedin: 'https://www.linkedin.com/in/haseeb-arshad-09881b347/',
   github:   'https://github.com/Hasee10',
-  resume:   'https://drive.google.com/file/d/1wiQ0FovDijWrjyYxRuv1UhAqHsVBoZct/view?usp=sharing',
+  resume:   'https://drive.google.com/file/d/1kqlYkkR_Kejau4rMmiGYpddFdOjQVy6R/view?usp=sharing',
 }
 
 export const STATS: Array<{ value: number; label: string; suffix: string }> = [

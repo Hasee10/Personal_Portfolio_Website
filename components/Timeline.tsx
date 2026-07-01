@@ -1,144 +1,555 @@
 'use client'
 
-import { useRef } from 'react'
-import { motion, useInView } from 'framer-motion'
-import { fadeUp, staggerContainer, slideInRight, staggerTight, fadeIn } from '@/lib/motion'
-import { TIMELINE } from '@/lib/constants'
+import { useRef, useState, useEffect } from 'react'
+import { motion, AnimatePresence, useInView } from 'framer-motion'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { fadeUp } from '@/lib/motion'
 
-/* ── Role type badge ────────────────────────────────────────────────────── */
-function TypeBadge({ type }: { type: 'role' | 'education' }) {
+// ── Types ─────────────────────────────────────────────────────────────────────
+
+type EntryType  = 'EXPERIENCE' | 'EDUCATION' | 'ACHIEVEMENT'
+type Weight     = 'primary' | 'secondary' | 'tertiary'
+type FilterType = 'ALL' | 'EXPERIENCE' | 'ACHIEVEMENT'
+
+interface Entry {
+  id:          number
+  type:        EntryType
+  title:       string
+  org:         string
+  period:      string
+  active:      boolean
+  description: string
+  bullets:     string[]
+  tags:        string[]
+  weight:      Weight
+}
+
+// ── Data (reverse chronological) ──────────────────────────────────────────────
+
+const ENTRIES: Entry[] = [
+  {
+    id: 1, type: 'EXPERIENCE', weight: 'primary', active: true,
+    title: 'AI Systems Builder',
+    org: 'Independent / Freelance',
+    period: 'Oct 2024 — Present',
+    description: 'Building production-grade AI products as an independent engineer — voice AI, agentic pipelines, RAG systems, and full-stack automation shipped to real clients across Pakistan and Australia.',
+    bullets: [
+      'Shipped 6 AI products (Visa2Land, ScopeForge, NexusDeals, VocalCRM, and more) from zero to live',
+      'Deployed voice AI agent in production for a real Australian migration agency client',
+      'Built LLM proposal pipeline (ScopeForge) cutting SOW generation from days to under 3 minutes',
+    ],
+    tags: ['VAPI', 'LangGraph', 'OpenAI', 'FastAPI', 'n8n', 'Supabase', 'React'],
+  },
+  {
+    id: 2, type: 'EXPERIENCE', weight: 'primary', active: false,
+    title: 'AI Automation Engineer',
+    org: 'Trilles AI',
+    period: 'Aug 2025 — Feb 2026',
+    description: 'Worked on developing and deploying n8n pipelines for production use cases, contributing to model training, evaluation, and optimization workflows.',
+    bullets: [
+      'Designed and implemented MLOps cycles for real-world use cases',
+      'Integrated model APIs into backend services using FastAPI',
+      'Contributed to CI/CD pipelines for automated model retraining',
+    ],
+    tags: ['Python', 'FastAPI', 'MLflow', 'Docker', 'n8n'],
+  },
+  {
+    id: 3, type: 'ACHIEVEMENT', weight: 'secondary', active: false,
+    title: 'Runner-up — Data Visualization Challenge',
+    org: 'FAST-NUCES',
+    period: 'Jan 2026',
+    description: 'Competed in a technical challenge focused on visualizing data, delivering a solution ranked among top submissions.',
+    bullets: [
+      'Designed and built the solution end-to-end within competition timeframe',
+      'Presented to a panel of industry and academic judges',
+      'Ranked second out of 11 participating teams',
+    ],
+    tags: ['Competition', 'Python', 'AI'],
+  },
+  {
+    id: 4, type: 'EDUCATION', weight: 'primary', active: true,
+    title: 'BS Data Science',
+    org: 'FAST-NUCES Islamabad',
+    period: '2023 — 2026',
+    description: 'Specializing in machine learning, NLP, and AI systems. Thesis: Agent Reliability Auditor — benchmarking LLM degradation across English, Roman Urdu, and code-switched inputs.',
+    bullets: [
+      'GPA maintained while shipping 6 production AI products in parallel',
+      'Thesis benchmarks 14 LLMs across 3,000+ prompts in 3 language forms',
+      'Coursework: Deep Learning, NLP, Data Mining, Parallel Computing, RL',
+    ],
+    tags: ['Machine Learning', 'NLP', 'Python', 'Research'],
+  },
+  {
+    id: 5, type: 'ACHIEVEMENT', weight: 'secondary', active: false,
+    title: 'Runner-up — Software Competition',
+    org: 'NASCON',
+    period: 'May 2024',
+    description: 'Delivered a technically strong software solution in a fast-paced competition setting, balancing speed, product thinking, and presentation quality.',
+    bullets: [
+      'Built and presented a working solution under competition constraints',
+      'Placed runner-up among strong university-level teams',
+    ],
+    tags: ['Software', 'Rapid Prototyping'],
+  },
+  {
+    id: 6, type: 'ACHIEVEMENT', weight: 'tertiary', active: false,
+    title: 'Best Delegate',
+    org: 'LGS IMUN & Regional MUNs',
+    period: '2020 — 2021',
+    description: 'Top-ranked delegate performance across regional Model UN conferences.',
+    bullets: [
+      'Led committee strategy with high-quality position papers',
+      'Earned Best Delegate recognition in competitive regional events',
+    ],
+    tags: ['Leadership', 'Debate', 'Research'],
+  },
+  {
+    id: 7, type: 'ACHIEVEMENT', weight: 'tertiary', active: false,
+    title: 'Honourable Delegate',
+    org: 'LGS IMUN & Regional MUNs',
+    period: '2017 — 2019',
+    description: 'Built early foundation in diplomacy, negotiation, and public speaking.',
+    bullets: ['Received honourable mentions across regional MUN committees'],
+    tags: ['Public Speaking', 'Negotiation'],
+  },
+]
+
+const FILTERS: FilterType[] = ['ALL', 'EXPERIENCE', 'ACHIEVEMENT']
+
+// ── Config ────────────────────────────────────────────────────────────────────
+
+const TYPE_CONFIG: Record<EntryType, { color: string; bg: string }> = {
+  EXPERIENCE:  { color: '#CAFF57', bg: 'rgba(202,255,87,0.06)'  },
+  EDUCATION:   { color: '#57FFD8', bg: 'rgba(87,255,216,0.06)' },
+  ACHIEVEMENT: { color: '#FFD657', bg: 'rgba(255,214,87,0.06)' },
+}
+
+const TAG_COLORS: Record<string, string> = {
+  VAPI: '#CAFF57', LangGraph: '#CAFF57', OpenAI: '#CAFF57', LangChain: '#CAFF57',
+  MLflow: '#CAFF57', AI: '#CAFF57',
+  n8n: '#57FFD8', FastAPI: '#57FFD8',
+  Supabase: '#FFD657', Docker: '#FFD657', Python: '#FFD657',
+  React: '#FF9557',
+}
+
+const MONO = "'Courier New', monospace"
+const EASE_OUT_EXPO = [0.16, 1, 0.3, 1] as const
+
+// ── Small components ──────────────────────────────────────────────────────────
+
+function TagPill({ tag }: { tag: string }) {
+  const color = TAG_COLORS[tag] ?? 'rgba(255,255,255,0.22)'
   return (
-    <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-dim">
-      {type === 'education' ? '✦ Education' : '✦ Experience'}
+    <span style={{
+      fontSize: '10px', fontFamily: MONO, color,
+      border: `1px solid ${color}44`, background: `${color}14`,
+      padding: '2px 8px', borderRadius: '999px', whiteSpace: 'nowrap',
+    }}>
+      {tag}
     </span>
   )
 }
 
-/* ── Pulsing "live" indicator ────────────────────────────────────────────── */
 function LiveBadge() {
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-full border border-accent/25 bg-accent/8 px-2.5 py-0.5 font-mono text-[11px] text-accent">
-      <span className="relative flex h-1.5 w-1.5">
-        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-60" />
-        <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-accent" />
-      </span>
-      Live
+    <span style={{
+      display: 'inline-flex', alignItems: 'center', gap: 5,
+      fontSize: '9px', fontFamily: MONO, letterSpacing: '0.12em',
+      color: '#4ADE80', border: '1px solid rgba(74,222,128,0.3)',
+      background: 'rgba(74,222,128,0.06)', padding: '2px 7px', borderRadius: '999px',
+    }}>
+      <motion.span
+        style={{ width: 5, height: 5, borderRadius: '50%', background: '#4ADE80', display: 'inline-block' }}
+        animate={{ opacity: [1, 0.3, 1] }}
+        transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
+      />
+      LIVE
     </span>
   )
 }
 
+function TypeBadge({ type }: { type: EntryType }) {
+  const cfg = TYPE_CONFIG[type]
+  return (
+    <span style={{
+      fontSize: '9px', fontFamily: MONO, letterSpacing: '0.14em',
+      color: cfg.color, border: `1px solid ${cfg.color}44`,
+      background: `${cfg.color}10`, padding: '2px 7px', borderRadius: '999px',
+    }}>
+      {type}
+    </span>
+  )
+}
+
+function BulletList({ bullets }: { bullets: string[] }) {
+  return (
+    <div className="flex flex-col gap-2">
+      {bullets.map((b, i) => (
+        <div key={i} className="flex items-start gap-3">
+          <span style={{ color: 'var(--color-accent)', fontFamily: MONO, fontSize: '10px', marginTop: 3, flexShrink: 0 }}>→</span>
+          <span style={{ fontSize: '13px', color: 'var(--color-muted)', lineHeight: '1.6' }}>{b}</span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function PeriodLabel({ period, align = 'right' }: { period: string; align?: 'left' | 'right' }) {
+  return (
+    <p style={{ fontFamily: MONO, fontSize: '11px', color: 'var(--color-dim)', letterSpacing: '0.06em', whiteSpace: 'nowrap', textAlign: align }}>
+      {period}
+    </p>
+  )
+}
+
+// ── Timeline dot + radar ping ─────────────────────────────────────────────────
+
+function TimelineDot({ typeColor }: { typeColor: string }) {
+  return (
+    <div style={{ position: 'relative', width: 10, height: 10 }}>
+      <motion.div
+        style={{ position: 'absolute', inset: 0, borderRadius: '50%', border: `1px solid ${typeColor}` }}
+        initial={{ scale: 1, opacity: 0.6 }}
+        whileInView={{ scale: 3, opacity: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8, ease: 'easeOut', delay: 0.2 }}
+      />
+      <motion.div
+        style={{
+          position: 'absolute', inset: 0, borderRadius: '50%',
+          border: `1.5px solid ${typeColor}`, background: 'var(--color-bg)', zIndex: 10,
+        }}
+        initial={{ scale: 0, opacity: 0 }}
+        whileInView={{ scale: 1, opacity: 1 }}
+        viewport={{ once: true, margin: '-30px' }}
+        transition={{ duration: 0.3, ease: [0.34, 1.56, 0.64, 1] }}
+      />
+    </div>
+  )
+}
+
+// ── Card templates ────────────────────────────────────────────────────────────
+
+function PrimaryCard({ entry, isRight, reduced }: { entry: Entry; isRight: boolean; reduced: boolean }) {
+  const { color, bg } = TYPE_CONFIG[entry.type]
+  return (
+    <motion.article
+      className="w-full rounded-2xl border border-border bg-surface"
+      style={{ minHeight: 220, borderTop: `3px solid ${color}` }}
+      initial={reduced ? undefined : { opacity: 0, x: isRight ? 40 : -40, filter: 'blur(4px)' }}
+      whileInView={reduced ? undefined : { opacity: 1, x: 0, filter: 'blur(0px)' }}
+      viewport={{ once: true, margin: '-60px' }}
+      transition={{ duration: 0.65, ease: EASE_OUT_EXPO }}
+      whileHover={reduced ? undefined : { borderColor: `${color}44`, backgroundColor: bg, y: -3 }}
+    >
+      <div className="p-6">
+        <div className="flex flex-wrap items-center gap-2 mb-3">
+          <TypeBadge type={entry.type} />
+          {entry.active && <LiveBadge />}
+        </div>
+        <h3 className="text-[20px] font-semibold text-text mb-1">{entry.title}</h3>
+        <p style={{ fontFamily: MONO, fontSize: '12px', color, marginBottom: 12 }}>{entry.org}</p>
+        <p className="text-[13px] leading-relaxed text-muted mb-4">{entry.description}</p>
+        <div className="mb-4"><BulletList bullets={entry.bullets} /></div>
+        <div className="border-t border-border pt-4 flex flex-wrap gap-1.5">
+          {entry.tags.map(t => <TagPill key={t} tag={t} />)}
+        </div>
+      </div>
+    </motion.article>
+  )
+}
+
+function SecondaryCard({ entry, isRight, reduced }: { entry: Entry; isRight: boolean; reduced: boolean }) {
+  const [expanded, setExpanded] = useState(false)
+  const { color, bg } = TYPE_CONFIG[entry.type]
+  return (
+    <motion.article
+      className="w-full rounded-xl border border-border bg-surface"
+      style={{ borderTop: `3px solid ${color}` }}
+      initial={reduced ? undefined : { opacity: 0, x: isRight ? 40 : -40, filter: 'blur(4px)' }}
+      whileInView={reduced ? undefined : { opacity: 1, x: 0, filter: 'blur(0px)' }}
+      viewport={{ once: true, margin: '-60px' }}
+      transition={{ duration: 0.65, ease: EASE_OUT_EXPO }}
+      whileHover={reduced ? undefined : { borderColor: `${color}44`, backgroundColor: bg, y: -3 }}
+    >
+      <div className="p-5">
+        <div className="flex flex-wrap items-center gap-2 mb-3">
+          <TypeBadge type={entry.type} />
+          {entry.active && <LiveBadge />}
+        </div>
+        <h3 className="text-[17px] font-semibold text-text mb-1">{entry.title}</h3>
+        <p style={{ fontFamily: MONO, fontSize: '12px', color, marginBottom: 10 }}>{entry.org}</p>
+        <p className="text-[13px] leading-relaxed text-muted">{entry.description}</p>
+        <button
+          onClick={() => setExpanded(v => !v)}
+          className="mt-2 mb-1 text-xs font-mono text-dim hover:text-muted transition-colors"
+        >
+          {expanded ? '— Less' : '+ Details'}
+        </button>
+        <AnimatePresence>
+          {expanded && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              style={{ overflow: 'hidden' }}
+              className="mb-2"
+            >
+              <BulletList bullets={entry.bullets} />
+            </motion.div>
+          )}
+        </AnimatePresence>
+        <div className="flex flex-wrap gap-1.5 border-t border-border pt-3 mt-2">
+          {entry.tags.map(t => <TagPill key={t} tag={t} />)}
+        </div>
+      </div>
+    </motion.article>
+  )
+}
+
+function TertiaryCard({ entry, isRight, reduced }: { entry: Entry; isRight: boolean; reduced: boolean }) {
+  const [hovered, setHovered] = useState(false)
+  const { color, bg } = TYPE_CONFIG[entry.type]
+  return (
+    <motion.article
+      className="w-full rounded-lg border border-border"
+      style={{ background: 'transparent' }}
+      initial={reduced ? undefined : { opacity: 0, x: isRight ? 40 : -40, filter: 'blur(4px)' }}
+      whileInView={reduced ? undefined : { opacity: 1, x: 0, filter: 'blur(0px)' }}
+      viewport={{ once: true, margin: '-60px' }}
+      transition={{ duration: 0.65, ease: EASE_OUT_EXPO }}
+      whileHover={reduced ? undefined : { borderColor: `${color}44`, backgroundColor: bg, y: -2 }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      <div className="p-4">
+        <div className="flex flex-wrap items-center gap-2 mb-2">
+          <TypeBadge type={entry.type} />
+          {entry.active && <LiveBadge />}
+          <span className="text-[15px] font-semibold text-text">{entry.title}</span>
+          <span style={{ fontFamily: MONO, fontSize: '12px', color }}>· {entry.org}</span>
+        </div>
+        <div className="flex flex-wrap gap-1.5">
+          {entry.tags.map(t => <TagPill key={t} tag={t} />)}
+        </div>
+        <AnimatePresence>
+          {hovered && (
+            <motion.p
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              style={{ overflow: 'hidden', fontSize: '13px', color: 'var(--color-muted)', lineHeight: '1.6', marginTop: 8 }}
+            >
+              {entry.description}
+            </motion.p>
+          )}
+        </AnimatePresence>
+      </div>
+    </motion.article>
+  )
+}
+
+// ── Entry card dispatcher ─────────────────────────────────────────────────────
+
+function EntryCard({ entry, isRight, reduced, showPeriod = false }: { entry: Entry; isRight: boolean; reduced: boolean; showPeriod?: boolean }) {
+  return (
+    <div className="w-full">
+      {showPeriod && (
+        <p style={{ fontFamily: MONO, fontSize: '11px', color: 'var(--color-dim)', letterSpacing: '0.06em', marginBottom: 6 }}>
+          {entry.period}
+        </p>
+      )}
+      {entry.weight === 'primary'   && <PrimaryCard   entry={entry} isRight={isRight} reduced={reduced} />}
+      {entry.weight === 'secondary' && <SecondaryCard entry={entry} isRight={isRight} reduced={reduced} />}
+      {entry.weight === 'tertiary'  && <TertiaryCard  entry={entry} isRight={isRight} reduced={reduced} />}
+    </div>
+  )
+}
+
+// ── Main section ──────────────────────────────────────────────────────────────
+
 export default function Timeline() {
-  const ref    = useRef<HTMLElement>(null)
-  const inView = useInView(ref, { once: true, margin: '-60px' })
+  const sectionRef  = useRef<HTMLElement>(null)
+  const timelineRef = useRef<HTMLDivElement>(null)
+  const lineRef     = useRef<HTMLDivElement>(null)
+  const inView      = useInView(sectionRef, { once: true, margin: '-80px' })
+  const [filter, setFilter] = useState<FilterType>('ALL')
 
   const reduced =
     typeof window !== 'undefined'
       ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
       : false
 
+  // GSAP center-line draw on scroll
+  useEffect(() => {
+    if (reduced || !lineRef.current || !timelineRef.current) return
+    gsap.registerPlugin(ScrollTrigger)
+    gsap.fromTo(
+      lineRef.current,
+      { scaleY: 0 },
+      {
+        scaleY: 1,
+        ease: 'none',
+        transformOrigin: 'top center',
+        scrollTrigger: {
+          trigger: timelineRef.current,
+          start: 'top 70%',
+          end: 'bottom 30%',
+          scrub: 0.8,
+        },
+      }
+    )
+    return () => ScrollTrigger.getAll().forEach(t => t.kill())
+  }, [reduced])
+
+  const visible = ENTRIES.filter(e =>
+    filter === 'ALL'        ? true :
+    filter === 'EXPERIENCE' ? (e.type === 'EXPERIENCE' || e.type === 'EDUCATION') :
+    e.type === 'ACHIEVEMENT'
+  )
+
   return (
-    <section id="experience" ref={ref} className="px-6 py-24">
-      <div className="mx-auto max-w-4xl">
+    <section id="experience" ref={sectionRef} className="px-6 py-28">
+      <div className="mx-auto max-w-5xl">
 
         {/* Header */}
         <motion.div
           variants={reduced ? undefined : fadeUp}
           initial={reduced ? undefined : 'hidden'}
           animate={inView ? 'visible' : 'hidden'}
-          className="mb-14"
+          className="mb-10"
         >
-          <p className="mb-3 font-mono text-[12px] tracking-widest text-dim">— Experience & Education</p>
-          <h2 className="text-[36px] font-medium text-text md:text-[40px]">
-            How I got here.
-          </h2>
+          <p className="mb-3 font-mono text-[12px] tracking-widest text-dim">— EXPERIENCE & EDUCATION</p>
+          <h2 className="text-[36px] font-medium text-text md:text-[40px]">How I got here.</h2>
         </motion.div>
 
-        {/* Cards */}
+        {/* Filter bar */}
         <motion.div
-          variants={reduced ? undefined : staggerContainer}
+          variants={reduced ? undefined : fadeUp}
           initial={reduced ? undefined : 'hidden'}
           animate={inView ? 'visible' : 'hidden'}
-          className="flex flex-col gap-5"
+          className="flex items-center gap-2 mb-14"
         >
-          {TIMELINE.map((entry, i) => (
-            <motion.article
-              key={entry.title}
-              variants={reduced ? undefined : slideInRight}
-              transition={{ delay: i * 0.12 }}
-              className="group relative overflow-hidden rounded-2xl border border-border bg-surface transition-colors duration-300 hover:border-border2 hover:bg-surface2"
+          {FILTERS.map(f => (
+            <button
+              key={f}
+              onClick={() => setFilter(f)}
+              style={{
+                fontFamily: MONO, fontSize: '12px', letterSpacing: '0.08em',
+                padding: '4px 14px', borderRadius: '999px', cursor: 'pointer',
+                border: `1px solid ${filter === f ? '#CAFF57' : 'var(--color-border)'}`,
+                color:      filter === f ? '#CAFF57' : 'var(--color-muted)',
+                background: filter === f ? 'rgba(202,255,87,0.08)' : 'transparent',
+                transition: 'all 150ms',
+              }}
             >
-              {/* Left accent bar — brighter for current roles */}
-              <div
-                className={`absolute left-0 top-0 h-full w-[3px] transition-colors duration-300 ${
-                  entry.current
-                    ? 'bg-accent group-hover:bg-accent'
-                    : 'bg-border2 group-hover:bg-accent/40'
-                }`}
-              />
-
-              <div className="p-6 pl-8 sm:p-8 sm:pl-10">
-
-                {/* ── Header row ── */}
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                  <div className="flex flex-col gap-2">
-                    {/* Type + live badge row */}
-                    <div className="flex flex-wrap items-center gap-2">
-                      <TypeBadge type={entry.type} />
-                      {entry.current && <LiveBadge />}
-                    </div>
-
-                    {/* Role title */}
-                    <h3 className="text-[22px] font-semibold leading-tight text-text sm:text-[24px]">
-                      {entry.title}
-                    </h3>
-
-                    {/* Organisation */}
-                    <p className="font-mono text-[14px] text-accent">{entry.org}</p>
-                  </div>
-
-                  {/* Date — right-aligned on desktop */}
-                  <span className="shrink-0 rounded-lg border border-border bg-surface2 px-3 py-1 font-mono text-[12px] text-dim sm:mt-1">
-                    {entry.year}
-                  </span>
-                </div>
-
-                {/* ── Description ── */}
-                <p className="mt-5 text-[15px] leading-[1.75] text-muted">
-                  {entry.description}
-                </p>
-
-                {/* ── Achievements ── */}
-                <motion.ul
-                  variants={reduced ? undefined : staggerTight}
-                  className="mt-5 space-y-2.5"
-                >
-                  {entry.achievements.map((item, j) => (
-                    <motion.li
-                      key={j}
-                      variants={reduced ? undefined : fadeIn}
-                      className="flex items-start gap-3 text-[14px] leading-6 text-muted"
-                    >
-                      <span className="mt-0.5 shrink-0 text-[13px] font-medium text-accent">→</span>
-                      <span>{item}</span>
-                    </motion.li>
-                  ))}
-                </motion.ul>
-
-                {/* ── Tech stack ── */}
-                <div className="mt-6 flex flex-wrap gap-2">
-                  {entry.stack.map((tag) => (
-                    <span
-                      key={tag}
-                      className="rounded-full border border-border bg-surface px-3 py-1 font-mono text-[11px] text-dim transition-colors duration-150 group-hover:border-border2 group-hover:text-muted"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </motion.article>
+              {f}
+            </button>
           ))}
         </motion.div>
+
+        {/* Timeline container */}
+        <div ref={timelineRef} className="relative">
+
+          {/* Center line — desktop only, GSAP-driven scaleY */}
+          <div
+            ref={lineRef}
+            className="hidden lg:block absolute top-0 bottom-0 w-px"
+            style={{
+              left: '50%',
+              transform: 'translateX(-50%)',
+              background: 'var(--color-border2)',
+              transformOrigin: 'top center',
+            }}
+          />
+
+          {/* Entries with AnimatePresence for filter reflow */}
+          <motion.div layout>
+            <AnimatePresence mode="popLayout">
+              {visible.map((entry, i) => {
+                const isRight   = i % 2 === 0
+                const typeColor = TYPE_CONFIG[entry.type].color
+
+                return (
+                  <motion.div
+                    key={entry.id}
+                    layout
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 0.25 }}
+                    style={{ marginBottom: 48 }}
+                  >
+                    {/* ── Mobile (< lg): single column, period inside card ── */}
+                    <div className="lg:hidden">
+                      <EntryCard entry={entry} isRight reduced={reduced} showPeriod />
+                    </div>
+
+                    {/* ── Desktop (≥ lg): zigzag 3-column grid ── */}
+                    <div
+                      className="hidden lg:grid"
+                      style={{ gridTemplateColumns: '1fr 40px 1fr', alignItems: 'center' }}
+                    >
+                      {/* Left column */}
+                      <div style={{ display: 'flex', justifyContent: 'flex-end', paddingRight: 24 }}>
+                        {isRight ? (
+                          <motion.div
+                            initial={reduced ? undefined : { opacity: 0, x: 40 }}
+                            whileInView={reduced ? undefined : { opacity: 1, x: 0 }}
+                            viewport={{ once: true, margin: '-60px' }}
+                            transition={{ duration: 0.5, ease: EASE_OUT_EXPO, delay: 0.1 }}
+                          >
+                            <PeriodLabel period={entry.period} align="right" />
+                          </motion.div>
+                        ) : (
+                          <EntryCard entry={entry} isRight={false} reduced={reduced} />
+                        )}
+                      </div>
+
+                      {/* Center column — dot (line passes through here) */}
+                      <div style={{ display: 'flex', justifyContent: 'center', position: 'relative', zIndex: 1 }}>
+                        <TimelineDot typeColor={typeColor} />
+                      </div>
+
+                      {/* Right column */}
+                      <div style={{ paddingLeft: 24 }}>
+                        {isRight ? (
+                          <EntryCard entry={entry} isRight reduced={reduced} />
+                        ) : (
+                          <motion.div
+                            initial={reduced ? undefined : { opacity: 0, x: -40 }}
+                            whileInView={reduced ? undefined : { opacity: 1, x: 0 }}
+                            viewport={{ once: true, margin: '-60px' }}
+                            transition={{ duration: 0.5, ease: EASE_OUT_EXPO, delay: 0.1 }}
+                          >
+                            <PeriodLabel period={entry.period} align="left" />
+                          </motion.div>
+                        )}
+                      </div>
+                    </div>
+                  </motion.div>
+                )
+              })}
+            </AnimatePresence>
+          </motion.div>
+        </div>
+
+        {/* Footer count */}
+        <div className="mt-12 flex items-center gap-4 border-t border-border pt-6">
+          <span className="font-mono text-xs text-dim">{ENTRIES.length} entries</span>
+          <span className="font-mono text-xs text-dim">·</span>
+          <span className="font-mono text-xs text-dim">
+            {ENTRIES.filter(e => e.type === 'EXPERIENCE' || e.type === 'EDUCATION').length} roles
+          </span>
+          <span className="font-mono text-xs text-dim">·</span>
+          <span className="font-mono text-xs text-dim">
+            {ENTRIES.filter(e => e.type === 'ACHIEVEMENT').length} achievements
+          </span>
+        </div>
+
       </div>
     </section>
   )

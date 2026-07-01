@@ -238,7 +238,7 @@ export default function Hero() {
               transition={{ duration: 0.6, delay: 1.2, ease: easeOutExpo }}
             >
               <MagneticAnchor
-                href="#projects"
+                href="/projects"
                 reduced={reduced}
                 className="inline-flex items-center rounded-lg bg-accent px-5 py-2.5 text-[15px] font-medium text-bg transition-[filter] duration-200 hover:brightness-110"
               >

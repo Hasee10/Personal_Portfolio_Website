@@ -708,6 +708,12 @@ video {
 .top-1\/2 {
   top: 50%;
 }
+.-bottom-2 {
+  bottom: -0.5rem;
+}
+.-right-2 {
+  right: -0.5rem;
+}
 .z-50 {
   z-index: 50;
 }
@@ -775,6 +781,9 @@ video {
 .ml-2 {
   margin-left: 0.5rem;
 }
+.mb-1 {
+  margin-bottom: 0.25rem;
+}
 .block {
   display: block;
 }
@@ -799,6 +808,9 @@ video {
 .aspect-square {
   aspect-ratio: 1 / 1;
 }
+.aspect-\[4\/5\] {
+  aspect-ratio: 4/5;
+}
 .h-1\.5 {
   height: 0.375rem;
 }
@@ -810,6 +822,12 @@ video {
 }
 .h-px {
   height: 1px;
+}
+.h-12 {
+  height: 3rem;
+}
+.h-16 {
+  height: 4rem;
 }
 .min-h-\[2\.5rem\] {
   min-height: 2.5rem;
@@ -828,6 +846,15 @@ video {
 }
 .w-full {
   width: 100%;
+}
+.w-px {
+  width: 1px;
+}
+.w-16 {
+  width: 4rem;
+}
+.w-\[200px\] {
+  width: 200px;
 }
 .max-w-2xl {
   max-width: 42rem;
@@ -855,6 +882,12 @@ video {
 }
 .flex-\[1\.2\] {
   flex: 1.2;
+}
+.flex-\[1\] {
+  flex: 1;
+}
+.flex-shrink-0 {
+  flex-shrink: 0;
 }
 .shrink-0 {
   flex-shrink: 0;
@@ -987,8 +1020,14 @@ video {
 .border {
   border-width: 1px;
 }
+.border-2 {
+  border-width: 2px;
+}
 .border-t {
   border-top-width: 1px;
+}
+.border-dashed {
+  border-style: dashed;
 }
 .border-accent {
   border-color: var(--color-accent);
@@ -1088,6 +1127,10 @@ video {
   padding-top: 0.375rem;
   padding-bottom: 0.375rem;
 }
+.py-28 {
+  padding-top: 7rem;
+  padding-bottom: 7rem;
+}
 .pl-8 {
   padding-left: 2rem;
 }
@@ -1102,6 +1145,9 @@ video {
 }
 .pt-16 {
   padding-top: 4rem;
+}
+.pt-6 {
+  padding-top: 1.5rem;
 }
 .text-center {
   text-align: center;
@@ -1150,6 +1196,13 @@ video {
 }
 .text-\[18px\] {
   font-size: 18px;
+}
+.text-\[20px\] {
+  font-size: 20px;
+}
+.text-xs {
+  font-size: 0.75rem;
+  line-height: 1rem;
 }
 .font-medium {
   font-weight: 500;
@@ -1394,6 +1447,10 @@ body {
   color: var(--color-text);
 }
 
+.hover\:text-muted:hover {
+  color: var(--color-muted);
+}
+
 .hover\:opacity-70:hover {
   opacity: 0.7;
 }
@@ -1520,12 +1577,32 @@ body {
 
 @media (min-width: 1024px) {
 
+  .lg\:block {
+    display: block;
+  }
+
   .lg\:flex {
     display: flex;
   }
 
+  .lg\:grid {
+    display: grid;
+  }
+
+  .lg\:hidden {
+    display: none;
+  }
+
   .lg\:w-\[40\%\] {
     width: 40%;
+  }
+
+  .lg\:w-\[260px\] {
+    width: 260px;
+  }
+
+  .lg\:w-full {
+    width: 100%;
   }
 
   .lg\:max-w-\[540px\] {
@@ -1546,6 +1623,10 @@ body {
 
   .lg\:gap-20 {
     gap: 5rem;
+  }
+
+  .lg\:gap-16 {
+    gap: 4rem;
   }
 }
 

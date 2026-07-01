@@ -81,12 +81,40 @@ export default function About() {
           variants={reduced ? undefined : staggerContainer}
           initial={reduced ? undefined : 'hidden'}
           animate={inView ? 'visible' : 'hidden'}
-          className="flex flex-col gap-12 lg:flex-row lg:gap-20"
+          className="flex flex-col gap-12 lg:flex-row lg:gap-16"
         >
+          {/* Photo placeholder */}
+          <motion.div
+            variants={reduced ? undefined : scaleIn}
+            className="flex-shrink-0 lg:w-[260px]"
+          >
+            {/* Replace src with your photo path once ready, e.g. src="/haseeb.jpg" */}
+            <div className="relative mx-auto w-[200px] lg:w-full">
+              <div
+                className="aspect-[4/5] w-full rounded-2xl border border-border bg-surface-2 overflow-hidden flex flex-col items-center justify-center gap-3"
+                style={{ background: 'var(--color-surface-2)' }}
+              >
+                {/* Placeholder avatar ring */}
+                <div className="w-16 h-16 rounded-full border-2 border-dashed border-border2 flex items-center justify-center">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <circle cx="12" cy="8" r="4" stroke="var(--color-dim)" strokeWidth="1.5"/>
+                    <path d="M4 20c0-4 3.582-7 8-7s8 3 8 7" stroke="var(--color-dim)" strokeWidth="1.5" strokeLinecap="round"/>
+                  </svg>
+                </div>
+                <p className="font-mono text-[10px] text-dim tracking-widest">PHOTO COMING</p>
+              </div>
+              {/* Accent corner accent */}
+              <div
+                className="absolute -bottom-2 -right-2 h-12 w-12 rounded-lg border border-accent/20"
+                style={{ background: 'rgba(202,255,87,0.04)' }}
+              />
+            </div>
+          </motion.div>
+
           {/* Bio column */}
           <motion.div
             variants={reduced ? undefined : fadeUp}
-            className="flex flex-[1.2] flex-col gap-6"
+            className="flex flex-[1] flex-col gap-6"
           >
             <p className="font-mono text-[12px] tracking-widest text-dim">— About</p>
             <h2 className="text-[36px] font-medium leading-tight text-text md:text-[40px]">
