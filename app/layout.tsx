@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Inter, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
 import Background from '@/components/Background'
@@ -14,8 +14,31 @@ const geistMono = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://mlengineer.vercel.app'),
   title: 'Haseeb Arshad — Agentic AI Engineer',
-  description: 'AI engineer building voice agents, LLM pipelines, and agentic systems that ship.',
+  description:
+    'AI engineer building voice agents, LLM pipelines, and agentic systems that ship. Production voice AI, RAG systems, and multi-agent orchestration.',
+  icons: {
+    icon: '/favicon.svg',
+  },
+  openGraph: {
+    title: 'Haseeb Arshad — Agentic AI Engineer',
+    description:
+      'AI engineer building voice agents, LLM pipelines, and agentic systems that ship.',
+    url: 'https://mlengineer.vercel.app',
+    siteName: 'Haseeb Arshad',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Haseeb Arshad — Agentic AI Engineer',
+    description:
+      'AI engineer building voice agents, LLM pipelines, and agentic systems that ship.',
+  },
+}
+
+export const viewport: Viewport = {
+  themeColor: '#090B08',
 }
 
 export default function RootLayout({
