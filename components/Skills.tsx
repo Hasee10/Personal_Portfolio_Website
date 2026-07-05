@@ -5,6 +5,7 @@ import { motion, useInView } from 'framer-motion'
 import { fadeUp, staggerContainer, staggerTight, fadeUpSoft } from '@/lib/motion'
 import { SKILLS } from '@/lib/constants'
 import { useReducedMotion } from '@/lib/useReducedMotion'
+import StackIcon from '@/components/StackIcon'
 
 /* ── Per-category visual treatment ─────────────────────────────────────────
  * Color encodes category identity. Cell span encodes weight: the LLM/agentic
@@ -79,13 +80,14 @@ function SkillGroup({
           <motion.li
             key={item}
             variants={reduced ? undefined : fadeUpSoft}
-            className="skill-pill rounded-full border px-3 py-1.5 font-mono text-[12px] text-text/90"
+            className="skill-pill inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 font-mono text-[12px] text-text/90"
             style={{
               ['--pill-c' as string]: cfg.color,
               borderColor: `${cfg.color}2E`,
               background:  `${cfg.color}0A`,
             }}
           >
+            <StackIcon name={item} color={cfg.color} size={12} />
             {item}
           </motion.li>
         ))}

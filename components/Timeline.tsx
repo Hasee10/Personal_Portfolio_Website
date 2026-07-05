@@ -6,6 +6,7 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { fadeUp } from '@/lib/motion'
 import { useReducedMotion } from '@/lib/useReducedMotion'
+import StackIcon from '@/components/StackIcon'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -147,7 +148,9 @@ function TagPill({ tag }: { tag: string }) {
       fontSize: '10px', fontFamily: MONO, color,
       border: `1px solid ${color}44`, background: `${color}14`,
       padding: '2px 8px', borderRadius: '999px', whiteSpace: 'nowrap',
+      display: 'inline-flex', alignItems: 'center', gap: '5px',
     }}>
+      <StackIcon name={tag} color={color} size={10} />
       {tag}
     </span>
   )
