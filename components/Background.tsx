@@ -19,7 +19,20 @@
  */
 
 import { useEffect, useState } from 'react'
+import { usePathname } from 'next/navigation'
 import { motion } from 'framer-motion'
+
+/* Per-page photographic base — each page family gets its own texture so the
+ * site doesn't feel like one wallpaper (all Unsplash License, graded dark):
+ *   /                  → moss macro   (organic, the home identity)
+ *   /projects          → fern frond   (fractal structure — "systems")
+ *   /projects/[slug]   → dark paper   (quietest — these are reading pages)
+ */
+function photoFor(pathname: string): { src: string; opacity: number } {
+  if (pathname === '/projects')          return { src: '/bg-fern.jpg',  opacity: 0.10 }
+  if (pathname.startsWith('/projects/')) return { src: '/bg-paper.jpg', opacity: 0.13 }
+  return { src: '/bg-moss.jpg', opacity: 0.09 }
+}
 
 /* Nested irregular loops — reads as elevation contours on a survey map.
  * One <g> reused twice at different scales/positions. */
@@ -45,6 +58,8 @@ function Contours({ className, style }: { className?: string; style?: React.CSSP
 
 export default function Background() {
   const [reduced, setReduced] = useState(false)
+  const pathname = usePathname()
+  const photo = photoFor(pathname ?? '/')
 
   useEffect(() => {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
@@ -60,17 +75,18 @@ export default function Background() {
       className="fixed inset-0 overflow-hidden"
       style={{ zIndex: -1, pointerEvents: 'none' }}
     >
-      {/* ── Layer 2: Moss macro photograph ── */}
-      {/* Graded down (brightness/saturation) and held at 9% so it registers
+      {/* ── Layer 2: Photographic texture (per page family) ── */}
+      {/* Graded down (brightness/saturation) and held at ~10% so it registers
           as physical texture under the light, never as a "background image".
           The vignette and grain above unify it with the generated layers. */}
       <div
+        key={photo.src}
         className="absolute inset-0"
         style={{
-          backgroundImage: 'url(/bg-moss.jpg)',
+          backgroundImage: `url(${photo.src})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          opacity: 0.09,
+          opacity: photo.opacity,
           filter: 'brightness(0.75) saturate(0.85)',
         }}
       />
