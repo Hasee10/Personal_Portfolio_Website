@@ -231,10 +231,10 @@ function PrimaryCard({ entry, isRight, reduced }: { entry: Entry; isRight: boole
     <motion.article
       className="w-full rounded-2xl border border-border bg-surface"
       style={{ minHeight: 220, borderTop: `3px solid ${color}` }}
-      initial={reduced ? undefined : { opacity: 0, x: isRight ? 40 : -40, filter: 'blur(4px)' }}
-      whileInView={reduced ? undefined : { opacity: 1, x: 0, filter: 'blur(0px)' }}
+      initial={reduced ? undefined : { opacity: 0, y: 16 }}
+      whileInView={reduced ? undefined : { opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-60px' }}
-      transition={{ duration: 0.65, ease: EASE_OUT_EXPO }}
+      transition={{ duration: 0.55, ease: EASE_OUT_EXPO }}
       whileHover={reduced ? undefined : { borderColor: `${color}44`, backgroundColor: bg, y: -3 }}
     >
       <div className="p-6">
@@ -261,10 +261,10 @@ function SecondaryCard({ entry, isRight, reduced }: { entry: Entry; isRight: boo
     <motion.article
       className="w-full rounded-xl border border-border bg-surface"
       style={{ borderTop: `3px solid ${color}` }}
-      initial={reduced ? undefined : { opacity: 0, x: isRight ? 40 : -40, filter: 'blur(4px)' }}
-      whileInView={reduced ? undefined : { opacity: 1, x: 0, filter: 'blur(0px)' }}
+      initial={reduced ? undefined : { opacity: 0, y: 16 }}
+      whileInView={reduced ? undefined : { opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-60px' }}
-      transition={{ duration: 0.65, ease: EASE_OUT_EXPO }}
+      transition={{ duration: 0.55, ease: EASE_OUT_EXPO }}
       whileHover={reduced ? undefined : { borderColor: `${color}44`, backgroundColor: bg, y: -3 }}
     >
       <div className="p-5">
@@ -311,10 +311,10 @@ function TertiaryCard({ entry, isRight, reduced }: { entry: Entry; isRight: bool
     <motion.article
       className="w-full rounded-lg border border-border"
       style={{ background: 'transparent' }}
-      initial={reduced ? undefined : { opacity: 0, x: isRight ? 40 : -40, filter: 'blur(4px)' }}
-      whileInView={reduced ? undefined : { opacity: 1, x: 0, filter: 'blur(0px)' }}
+      initial={reduced ? undefined : { opacity: 0, y: 16 }}
+      whileInView={reduced ? undefined : { opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-60px' }}
-      transition={{ duration: 0.65, ease: EASE_OUT_EXPO }}
+      transition={{ duration: 0.55, ease: EASE_OUT_EXPO }}
       whileHover={reduced ? undefined : { borderColor: `${color}44`, backgroundColor: bg, y: -2 }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}

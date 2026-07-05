@@ -130,7 +130,7 @@ export default function Nav() {
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.28, ease: [0.25, 1, 0.5, 1] }}
-            className="overflow-hidden border-t border-border md:hidden"
+            className="overflow-hidden border-t border-border bg-bg/95 backdrop-blur-md md:hidden"
           >
             <div className="flex flex-col gap-1 py-4">
               {NAV_LINKS.map((link) => (

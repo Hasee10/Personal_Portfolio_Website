@@ -162,7 +162,7 @@ function StatusBadge({ status }: { status: Status }) {
   const cfg = STATUS_CFG[status]
   return (
     <span style={{
-      border: `1px solid ${cfg.color}`, color: cfg.color, background: cfg.bg,
+      border: `1px solid ${cfg.color}66`, color: cfg.color, background: cfg.bg,
       fontSize: '9px', fontFamily: MONO, letterSpacing: '0.14em',
       padding: '2px 7px', borderRadius: '999px',
       display: 'inline-flex', alignItems: 'center', gap: '5px', flexShrink: 0,

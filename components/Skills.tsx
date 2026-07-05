@@ -53,6 +53,8 @@ function SkillGroup({
   return (
     <motion.div
       variants={reduced ? undefined : fadeUpSoft}
+      whileHover={reduced ? undefined : { y: -2, borderColor: `${cfg.color}33` }}
+      transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
       className={`${cfg.span} rounded-xl border border-border bg-surface p-5`}
       style={{ borderTop: `2px solid ${cfg.color}55` }}
     >
@@ -77,12 +79,11 @@ function SkillGroup({
           <motion.li
             key={item}
             variants={reduced ? undefined : fadeUpSoft}
-            className="rounded-full border px-3 py-1.5 font-mono text-[12px] text-text/90 transition-colors"
+            className="skill-pill rounded-full border px-3 py-1.5 font-mono text-[12px] text-text/90"
             style={{
+              ['--pill-c' as string]: cfg.color,
               borderColor: `${cfg.color}2E`,
               background:  `${cfg.color}0A`,
-              transitionDuration: 'var(--dur)',
-              transitionTimingFunction: 'var(--ease-out)',
             }}
           >
             {item}

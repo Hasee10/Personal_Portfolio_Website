@@ -90,6 +90,18 @@ export default function About() {
                   fill
                   sizes="(min-width: 1024px) 260px, 200px"
                   className="object-cover"
+                  style={{ filter: 'saturate(0.88) contrast(1.03)' }}
+                />
+                {/* Moss grade — ties the photo into the palette instead of
+                    letting a warm-toned image float on the dark theme */}
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-0"
+                  style={{
+                    background:
+                      'linear-gradient(180deg, rgba(9,11,8,0) 55%, rgba(9,11,8,0.35) 100%), radial-gradient(ellipse at 30% 20%, rgba(78,107,69,0.12) 0%, transparent 60%)',
+                    mixBlendMode: 'normal',
+                  }}
                 />
               </div>
               {/* Accent corner */}

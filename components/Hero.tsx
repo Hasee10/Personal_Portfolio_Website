@@ -169,7 +169,8 @@ function NodeGraph({ reduced }: { reduced: boolean }) {
               key={`n${i}`}
               onMouseEnter={() => setHovered(i)}
               onMouseLeave={() => setHovered(null)}
-              style={{ cursor: 'default' }}
+              onClick={() => setHovered(h => (h === i ? null : i))}
+              style={{ cursor: 'pointer' }}
               animate={reduced ? {} : { y: [0, i % 2 === 0 ? -3 : 3, 0] }}
               transition={{ duration: 5 + i * 0.7, repeat: Infinity, ease: 'easeInOut' }}
             >
@@ -254,7 +255,7 @@ function NodeGraph({ reduced }: { reduced: boolean }) {
         {hovered !== null ? (
           <span className="text-muted">{NODES[hovered].label} — {NODES[hovered].detail}</span>
         ) : (
-          <span>hover a node</span>
+          <span>hover or tap a node</span>
         )}
       </p>
     </div>
@@ -345,9 +346,10 @@ export default function Hero() {
               </MagneticAnchor>
             </motion.div>
 
-            {/* Scroll indicator */}
+            {/* Scroll indicator — desktop only; on mobile the graph sits
+                below the CTAs and the arrow would point at it, not at About */}
             <motion.div
-              className="mt-2"
+              className="mt-2 hidden lg:block"
               initial={reduced ? {} : { opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5, delay: 1.5 }}
