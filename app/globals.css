@@ -2,17 +2,29 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Forest Moss token system ────────────────────────────────────────────────
+ * accent      — Signal Lime: interactive elements, counters, badges, emphasis
+ * accent-2    — Moss: structural fills, ambient glows, rules (never small text)
+ * edu / gold  — semantic hues: education + achievement timeline entries only
+ * Type scale  — 1.333 (perfect fourth) from 16px: 16 / 21 / 28 / 38 / 50
+ * Motion      — one secondary-transition token: --ease-out at --dur
+ */
 :root {
   --color-bg:        #090B08;
   --color-surface:   #101410;
   --color-surface-2: #161D14;
   --color-border:    #1C2419;
   --color-border-2:  #263321;
-  --color-accent:    #4E6B45;
-  --color-accent-2:  #3A5031;
+  --color-accent:    #CAFF57;
+  --color-accent-2:  #4E6B45;
   --color-text:      #F4E8D0;
   --color-muted:     #8A9A7E;
-  --color-dim:       #3D4D35;
+  --color-dim:       #5C6B50;
+  --color-edu:       #57FFD8;
+  --color-gold:      #FFD657;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur: 200ms;
 }
 
 *,
@@ -37,6 +49,18 @@ body {
   overflow-x: hidden;
 }
 
+::selection {
+  background: rgba(202, 255, 87, 0.22);
+  color: var(--color-text);
+}
+
+/* Visible keyboard focus everywhere — quality floor, not an extra. */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
 @keyframes blink {
   0%, 100% { opacity: 1; }
   50%       { opacity: 0; }
@@ -54,4 +78,11 @@ body {
 
 .bounce-down {
   animation: bounce-down 1.5s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cursor-blink,
+  .bounce-down {
+    animation: none;
+  }
 }

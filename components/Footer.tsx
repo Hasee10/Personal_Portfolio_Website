@@ -5,15 +5,12 @@ import { motion, useInView } from 'framer-motion'
 import { Github, Linkedin } from 'lucide-react'
 import { META } from '@/lib/constants'
 import { fadeIn, staggerContainer } from '@/lib/motion'
+import { useReducedMotion } from '@/lib/useReducedMotion'
 
 export default function Footer() {
-  const ref    = useRef<HTMLElement>(null)
-  const inView = useInView(ref, { once: true, margin: '-40px' })
-
-  const reduced =
-    typeof window !== 'undefined'
-      ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
-      : false
+  const ref     = useRef<HTMLElement>(null)
+  const inView  = useInView(ref, { once: true, margin: '-40px' })
+  const reduced = useReducedMotion()
 
   return (
     <motion.footer

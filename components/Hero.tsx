@@ -4,13 +4,13 @@ import { useState, useEffect, useRef } from 'react'
 import { motion, useMotionValue, useSpring } from 'framer-motion'
 import { ArrowDown } from 'lucide-react'
 import { META } from '@/lib/constants'
-import { fadeUp, fadeIn, easeOutExpo } from '@/lib/motion'
-import NodeGraph3D from '@/components/NodeGraph3D'
+import { fadeIn, easeOutExpo } from '@/lib/motion'
+import { useReducedMotion } from '@/lib/useReducedMotion'
 
 /* ── Magnetic button ───────────────────────────────────────────────────────
  * Tracks the cursor within the button's bounding box and applies a fractional
  * translation (28% of offset distance) via spring physics.
- * Uses only `transform` — zero layout repaints, 60fps guaranteed.
+ * Uses only `transform` — zero layout repaints.
  */
 function MagneticAnchor({
   href,
@@ -61,7 +61,10 @@ function MagneticAnchor({
   )
 }
 
-/* ── Node-graph SVG data ───────────────────────────────────────────────── */
+/* ── Node-graph SVG ────────────────────────────────────────────────────────
+ * Agentic-systems identity mark. One infinite rotate transform on a <g> —
+ * no canvas, no render loop, degrades to a static graph under reduced motion.
+ */
 const NODES = [
   { x: 200, y: 70  },
   { x: 330, y: 140 },
@@ -103,7 +106,8 @@ function NodeGraph({ reduced }: { reduced: boolean }) {
               key={`e${i}`}
               x1={na.x} y1={na.y}
               x2={nb.x} y2={nb.y}
-              stroke="var(--color-dim)"
+              stroke="var(--color-accent-2)"
+              strokeOpacity="0.55"
               strokeWidth="0.8"
               initial={reduced ? {} : { pathLength: 0, opacity: 0 }}
               animate={{ pathLength: 1, opacity: 1 }}
@@ -155,15 +159,20 @@ function NodeGraph({ reduced }: { reduced: boolean }) {
 
 /* ── Hero ─────────────────────────────────────────────────────────────── */
 export default function Hero() {
-  const reduced =
-    typeof window !== 'undefined'
-      ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
-      : false
+  const reduced = useReducedMotion()
 
   const tagline = META.tagline
-  const [typedChars, setTypedChars]   = useState(reduced ? tagline.length : 0)
-  const [showCursor, setShowCursor]   = useState(reduced)
-  const [startTyping, setStartTyping] = useState(reduced)
+  const [typedChars, setTypedChars]   = useState(0)
+  const [showCursor, setShowCursor]   = useState(false)
+  const [startTyping, setStartTyping] = useState(false)
+
+  // Reduced motion: show the full tagline immediately, no typing.
+  useEffect(() => {
+    if (!reduced) return
+    setTypedChars(tagline.length)
+    setShowCursor(true)
+    setStartTyping(true)
+  }, [reduced, tagline.length])
 
   useEffect(() => {
     if (reduced) return
@@ -172,13 +181,13 @@ export default function Hero() {
   }, [reduced])
 
   useEffect(() => {
-    if (!startTyping || typedChars >= tagline.length) {
+    if (reduced || !startTyping || typedChars >= tagline.length) {
       if (startTyping) setShowCursor(true)
       return
     }
     const t = setTimeout(() => setTypedChars((n) => n + 1), 40)
     return () => clearTimeout(t)
-  }, [startTyping, typedChars, tagline.length])
+  }, [reduced, startTyping, typedChars, tagline.length])
 
   return (
     <section
@@ -202,9 +211,9 @@ export default function Hero() {
               — AI / LLM Engineer
             </motion.p>
 
-            {/* Name — blur-fade-up for the premium first impression */}
+            {/* Name — mono display face, blur-fade-up */}
             <motion.h1
-              className="text-[36px] font-semibold leading-tight text-text md:text-[56px]"
+              className="font-mono text-[34px] font-semibold leading-tight tracking-tight text-text md:text-[50px]"
               initial={reduced ? {} : { opacity: 0, y: 20, filter: 'blur(8px)' }}
               animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
               transition={{ duration: 0.75, delay: 0.55, ease: easeOutExpo }}
@@ -212,11 +221,13 @@ export default function Hero() {
               {META.name}
             </motion.h1>
 
-            {/* Typewriter tagline */}
-            <div className="min-h-[2.5rem] text-[22px] font-semibold text-text md:text-[28px]">
-              {tagline.slice(0, typedChars)}
+            {/* Signature moment: terminal typewriter tagline */}
+            <div className="min-h-[2.5rem] font-mono text-[18px] font-medium text-accent md:text-[21px]">
+              <span aria-hidden="true" className="text-dim">$ </span>
+              <span className="sr-only">{tagline}</span>
+              <span aria-hidden="true">{tagline.slice(0, typedChars)}</span>
               {showCursor && (
-                <span className="cursor-blink ml-0.5 inline-block">|</span>
+                <span aria-hidden="true" className="cursor-blink ml-0.5 inline-block">▌</span>
               )}
             </div>
 
@@ -240,7 +251,7 @@ export default function Hero() {
               <MagneticAnchor
                 href="/projects"
                 reduced={reduced}
-                className="inline-flex items-center rounded-lg bg-accent px-5 py-2.5 text-[15px] font-medium text-bg transition-[filter] duration-200 hover:brightness-110"
+                className="inline-flex items-center rounded-lg bg-accent px-5 py-2.5 text-[15px] font-semibold text-bg transition-[filter] duration-200 hover:brightness-110"
               >
                 View Projects
               </MagneticAnchor>
@@ -266,7 +277,7 @@ export default function Hero() {
             </motion.div>
           </div>
 
-          {/* ── Right column: 3-D canvas node graph ─── */}
+          {/* ── Right column: SVG node graph ─────────── */}
           <div className="hidden items-center justify-center lg:flex lg:w-[40%]">
             <div className="relative flex items-center justify-center">
               {/* Soft ambient glow behind the graph */}
@@ -280,7 +291,7 @@ export default function Hero() {
                   filter: 'blur(24px)',
                 }}
               />
-              <NodeGraph3D reduced={reduced} />
+              <NodeGraph reduced={reduced} />
             </div>
           </div>
 

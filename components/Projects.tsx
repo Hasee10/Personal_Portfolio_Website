@@ -9,13 +9,14 @@ import {
   useMotionTemplate,
   AnimatePresence,
 } from 'framer-motion'
-import { Github, ExternalLink } from 'lucide-react'
+import { Github, ExternalLink, Lock } from 'lucide-react'
 import { fadeUp, staggerContainer, scaleIn } from '@/lib/motion'
+import { useReducedMotion } from '@/lib/useReducedMotion'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-type Status   = 'PRODUCTION' | 'RESEARCH' | 'OPEN SOURCE'
-type Visual   = 'waveform' | 'document' | 'spider' | 'benchmark' | 'funnel' | 'rag' | 'pathfinding'
+type Status   = 'PRODUCTION' | 'RESEARCH' | 'OPEN SOURCE' | 'INTERNAL'
+type Visual   = 'waveform' | 'document' | 'spider' | 'benchmark' | 'funnel' | 'rag' | 'pathfinding' | 'agents'
 type Template = 'featured' | 'standard' | 'strip'
 
 interface ProjectData {
@@ -25,13 +26,16 @@ interface ProjectData {
   desc:     string
   tags:     string[]
   impact:   string
-  github:   string
+  github:   string | null   // real repo URL only — never a profile fallback
+  source?:  string          // shown when github is null, e.g. 'Private · client work'
   live?:    string
   visual:   Visual
   template: Template
 }
 
 // ── Data ──────────────────────────────────────────────────────────────────────
+// Link policy: `github` holds a REAL repository URL or null. Closed-source and
+// client work states so explicitly via `source` — no silent profile links.
 
 const PROJECTS: ProjectData[] = [
   {
@@ -39,7 +43,7 @@ const PROJECTS: ProjectData[] = [
     desc:   'Voice AI platform for Australian visa eligibility. Live with a real migration agency client — handles full eligibility logic across subclasses in real-time.',
     tags:   ['VAPI', 'n8n', 'FastAPI', 'React', 'Voice AI'],
     impact: 'Live client',
-    github: 'https://github.com/Hasee10',
+    github: null, source: 'Private · client work',
     visual: 'waveform', template: 'featured',
   },
   {
@@ -47,7 +51,7 @@ const PROJECTS: ProjectData[] = [
     desc:   'Two-pass LLM pipeline generating client-ready SOWs with scoring, diagrams, and psychology-driven rewrites. Cuts proposal time from days to under 3 minutes.',
     tags:   ['Gemini', 'Groq', 'Mistral', 'React-PDF'],
     impact: '2-pass pipeline',
-    github: 'https://github.com/Hasee10',
+    github: null, source: 'Private · client work',
     visual: 'document', template: 'standard',
   },
   {
@@ -55,15 +59,15 @@ const PROJECTS: ProjectData[] = [
     desc:   'Pakistan-focused deal aggregator. 155 sites, 25 Scrapy spiders, Redis caching, live deal feed with sub-second refresh.',
     tags:   ['Next.js', 'FastAPI', 'Supabase', 'Scrapy', 'Redis'],
     impact: '155 sites',
-    github: 'https://github.com/Hasee10',
+    github: null, source: 'Private · in production',
     visual: 'spider', template: 'standard',
   },
   {
     number: '04', name: 'Agent Reliability Auditor', status: 'RESEARCH',
     desc:   'Thesis: systematic LLM degradation benchmarking across English, Roman Urdu, and code-switched inputs. 14 models, 3,000+ prompts, 18–34% accuracy drops identified.',
     tags:   ['Python', 'HuggingFace', 'LangChain', 'NLP'],
-    impact: '3,000+ prompts',
-    github: 'https://github.com/Hasee10',
+    impact: '14 models · 3,000+ prompts',
+    github: null, source: 'Private · thesis',
     visual: 'benchmark', template: 'standard',
   },
   {
@@ -71,7 +75,7 @@ const PROJECTS: ProjectData[] = [
     desc:   'Inbound voice AI for real estate lead qualification. Handles screening, objection handling, and CRM push in real-time with no human in the loop.',
     tags:   ['VAPI', 'n8n', 'WebSocket', 'Supabase', 'OpenAI'],
     impact: 'Real-time CRM',
-    github: 'https://github.com/Hasee10',
+    github: null, source: 'Private · client work',
     visual: 'funnel', template: 'standard',
   },
   {
@@ -84,7 +88,7 @@ const PROJECTS: ProjectData[] = [
     visual: 'rag', template: 'standard',
   },
   {
-    number: '07', name: 'AI Voice Agent — LiveKit', status: 'PRODUCTION',
+    number: '07', name: 'AI Voice Agent — LiveKit', status: 'OPEN SOURCE',
     desc:   'Real-time AI voice agent for AutoZone service. Integrates LiveKit transport, Gemini API inference, and a React frontend for sub-200ms round-trip responses.',
     tags:   ['LiveKit', 'Gemini', 'Flask', 'React', 'Voice AI'],
     impact: 'Sub-200ms',
@@ -92,7 +96,7 @@ const PROJECTS: ProjectData[] = [
     visual: 'waveform', template: 'standard',
   },
   {
-    number: '08', name: 'AeroNet Lite', status: 'RESEARCH',
+    number: '08', name: 'AeroNet Lite', status: 'OPEN SOURCE',
     desc:   'Autonomous drone delivery simulation with CSP constraint planning, A* multi-hop routing, and real-time fleet replanning under node failures.',
     tags:   ['Python', 'A* Search', 'CSP', 'Simulation'],
     impact: 'Fleet planning',
@@ -100,15 +104,17 @@ const PROJECTS: ProjectData[] = [
     visual: 'pathfinding', template: 'standard',
   },
   {
-    number: '09', name: 'LangGraph Agents', status: 'OPEN SOURCE',
+    number: '09', name: 'LangGraph Agents', status: 'INTERNAL',
     desc:   'Modular multi-agent orchestration — research, code review, and web-search agents with shared persistent memory across sessions.',
     tags:   ['LangGraph', 'OpenAI', 'Tavily', 'FastAPI'],
     impact: 'Persistent memory',
-    github: 'https://github.com/Hasee10',
-    visual: 'waveform', template: 'strip',
+    github: null, source: 'Private · internal tooling',
+    visual: 'agents', template: 'strip',
   },
 ]
 
+// Bento weights — production/client work gets more visual area than
+// research or internal tooling.
 const COL_CLASSES: Record<string, string> = {
   'Visa2Land':                'col-span-12 md:col-span-8',
   'ScopeForge':               'col-span-12 md:col-span-4',
@@ -127,6 +133,7 @@ const STATUS_CFG: Record<Status, { color: string; bg: string; dot: boolean }> = 
   PRODUCTION:    { color: '#4ADE80', bg: 'rgba(74,222,128,0.08)',  dot: true  },
   RESEARCH:      { color: '#FBBF24', bg: 'rgba(251,191,36,0.08)',  dot: false },
   'OPEN SOURCE': { color: '#60A5FA', bg: 'rgba(96,165,250,0.08)',  dot: false },
+  INTERNAL:      { color: '#8A9A7E', bg: 'rgba(138,154,126,0.08)', dot: false },
 }
 
 const TAG_COLORS: Record<string, string> = {
@@ -147,7 +154,7 @@ const TAG_COLORS: Record<string, string> = {
   TypeScript: '#FF9557',
 }
 
-const MONO = "'Courier New', monospace"
+const MONO = 'var(--font-geist-mono), monospace'
 
 // ── Utility components ────────────────────────────────────────────────────────
 
@@ -185,7 +192,7 @@ function TagPill({ tag }: { tag: string }) {
   )
 }
 
-// ── SVG Visuals ────────────────────────────────────────────────────────────────
+// ── SVG Visuals — each scoped to its own project's actual content ────────────
 
 function WaveformVisual({ hovered, inView }: { hovered: boolean; inView: boolean }) {
   const bars = [20, 35, 55, 42, 70, 88, 60, 45, 72, 50, 38, 25]
@@ -287,10 +294,13 @@ function SpiderVisual({ hovered, inView }: { hovered: boolean; inView: boolean }
           transition={{ duration: 2.4 * spd, repeat: Infinity, delay: i * 0.5, ease: 'easeInOut' }}
         />
       ))}
+      <text x={294} y={92} textAnchor="end" fill="#3A4A28" fontSize={7} fontFamily={MONO}>25 SPIDERS · 155 SITES</text>
     </svg>
   )
 }
 
+// Benchmark grid — Agent Reliability Auditor. The pass/fail texture is
+// illustrative; the caption states only the project's REAL numbers.
 const PASS_SET    = new Set([0,1,2,3,4,5,6,7,8,9,10,11,13,14,15,17,18,19,21,22,23,24])
 const BENCH_TOTAL = 28
 const BENCH_CYCLE = BENCH_TOTAL + 12
@@ -319,31 +329,25 @@ function BenchmarkVisual({ inView }: { hovered: boolean; inView: boolean }) {
             key={i}
             x={OX + col * (SQ + GAP)} y={OY + row * (SQ + GAP)}
             width={SQ} height={SQ} rx={2}
+            style={{ fill: '#181C12', fillOpacity: 0.4 }}
             animate={{ fill: filled ? (isPass ? '#CAFF57' : '#FF4757') : '#181C12', fillOpacity: filled ? 0.85 : 0.4 }}
             transition={{ duration: 0.18 }}
           />
         )
       })}
-      <text x={290} y={92} textAnchor="end" fill="#3A4A28" fontSize={8.5} fontFamily={MONO}>PASS RATE: 87%</text>
+      <text x={294} y={92} textAnchor="end" fill="#3A4A28" fontSize={8} fontFamily={MONO}>14 MODELS · 3,000+ PROMPTS</text>
     </svg>
   )
 }
 
+// Lead-qualification funnel — VocalCRM. Stage labels describe what the
+// system does; no invented deal counts.
 function FunnelVisual({ inView }: { hovered: boolean; inView: boolean }) {
-  const [count, setCount] = useState(0)
-
-  useEffect(() => {
-    if (!inView) return
-    let n = 0
-    const id = setInterval(() => { n++; setCount(n); if (n >= 47) clearInterval(id) }, 28)
-    return () => clearInterval(id)
-  }, [inView])
-
   const stages = [
-    { label: 'INBOUND',    w: 165, y: 10, opacity: 0.8,  accent: false },
-    { label: 'QUALIFIED',  w: 118, y: 30, opacity: 0.7,  accent: false },
-    { label: 'INTERESTED', w:  72, y: 50, opacity: 0.6,  accent: false },
-    { label: 'CLOSED',     w:  40, y: 70, opacity: 1.0,  accent: true  },
+    { label: 'INBOUND CALL', w: 165, y: 10, opacity: 0.8,  accent: false },
+    { label: 'SCREENED',     w: 118, y: 30, opacity: 0.7,  accent: false },
+    { label: 'QUALIFIED',    w:  72, y: 50, opacity: 0.6,  accent: false },
+    { label: 'CRM PUSH',     w:  40, y: 70, opacity: 1.0,  accent: true  },
   ]
 
   return (
@@ -359,8 +363,7 @@ function FunnelVisual({ inView }: { hovered: boolean; inView: boolean }) {
           <text x={182} y={s.y + 8} fill={s.accent ? '#CAFF57' : '#3A4A28'} fontSize={8} fontFamily={MONO}>{s.label}</text>
         </g>
       ))}
-      <text x={292} y={78} textAnchor="end" fill="#CAFF57" fontSize={11} fontFamily={MONO} fontWeight="600">{count}</text>
-      <text x={292} y={88} textAnchor="end" fill="#3A4A28" fontSize={7} fontFamily={MONO}>DEALS CLOSED</text>
+      <text x={294} y={92} textAnchor="end" fill="#3A4A28" fontSize={7} fontFamily={MONO}>NO HUMAN IN THE LOOP</text>
     </svg>
   )
 }
@@ -427,7 +430,7 @@ function RAGVisual({ hovered, inView }: { hovered: boolean; inView: boolean }) {
   )
 }
 
-// A* drone routing simulation
+// A* drone routing simulation — AeroNet Lite
 const DRONE_WPS = [
   [16, 50], [48, 50], [72, 72], [112, 72], [142, 50],
   [172, 50], [194, 28], [228, 28], [254, 50], [284, 50],
@@ -501,21 +504,8 @@ function PathfindingVisual({ hovered, inView }: { hovered: boolean; inView: bool
   )
 }
 
-function ProjectVisual({ type, hovered, inView }: { type: Visual; hovered: boolean; inView: boolean }) {
-  switch (type) {
-    case 'waveform':     return <WaveformVisual     hovered={hovered} inView={inView} />
-    case 'document':     return <DocumentVisual     hovered={hovered} inView={inView} />
-    case 'spider':       return <SpiderVisual       hovered={hovered} inView={inView} />
-    case 'benchmark':    return <BenchmarkVisual    hovered={hovered} inView={inView} />
-    case 'funnel':       return <FunnelVisual       hovered={hovered} inView={inView} />
-    case 'rag':          return <RAGVisual          hovered={hovered} inView={inView} />
-    case 'pathfinding':  return <PathfindingVisual  hovered={hovered} inView={inView} />
-  }
-}
-
-// ── Mini flow graph (strip card) ─────────────────────────────────────────────
-
-function FlowGraph() {
+// Multi-agent flow — LangGraph Agents strip card
+function AgentsVisual() {
   const LINE = 14
   return (
     <svg viewBox="0 0 72 16" width="72" height="16" aria-hidden="true"
@@ -539,7 +529,21 @@ function FlowGraph() {
   )
 }
 
-// ── TiltCard ──────────────────────────────────────────────────────────────────
+function ProjectVisual({ type, hovered, inView }: { type: Visual; hovered: boolean; inView: boolean }) {
+  switch (type) {
+    case 'waveform':     return <WaveformVisual     hovered={hovered} inView={inView} />
+    case 'document':     return <DocumentVisual     hovered={hovered} inView={inView} />
+    case 'spider':       return <SpiderVisual       hovered={hovered} inView={inView} />
+    case 'benchmark':    return <BenchmarkVisual    hovered={hovered} inView={inView} />
+    case 'funnel':       return <FunnelVisual       hovered={hovered} inView={inView} />
+    case 'rag':          return <RAGVisual          hovered={hovered} inView={inView} />
+    case 'pathfinding':  return <PathfindingVisual  hovered={hovered} inView={inView} />
+    case 'agents':       return null // inline mini-graph rendered by StripCard
+  }
+}
+
+// ── TiltCard — the site's single 3D touch: CSS perspective tilt, transform
+//    only, no render loop, disabled under reduced motion. ──────────────────────
 
 function TiltCard({ children, className, disabled }: { children: ReactNode; className?: string; disabled?: boolean }) {
   const ref   = useRef<HTMLDivElement>(null)
@@ -609,14 +613,22 @@ function CardMeta({ project }: { project: ProjectData }) {
   )
 }
 
+/* Footer: real repo link OR an explicit private label — never a silent
+   profile-URL fallback. */
 function CardFooter({ project }: { project: ProjectData }) {
   return (
     <div className="flex items-center gap-4 border-t border-border pt-3">
-      <a href={project.github} target="_blank" rel="noopener noreferrer"
-        className="flex items-center gap-1.5 text-[12px] text-muted transition-colors hover:text-accent"
-        onClick={e => e.stopPropagation()}>
-        <Github size={11} /> GitHub ↗
-      </a>
+      {project.github ? (
+        <a href={project.github} target="_blank" rel="noopener noreferrer"
+          className="flex items-center gap-1.5 text-[12px] text-muted transition-colors hover:text-accent"
+          onClick={e => e.stopPropagation()}>
+          <Github size={11} /> GitHub ↗
+        </a>
+      ) : (
+        <span className="flex items-center gap-1.5 text-[12px] text-dim">
+          <Lock size={10} /> {project.source ?? 'Private'}
+        </span>
+      )}
       {project.live && (
         <a href={project.live} target="_blank" rel="noopener noreferrer"
           className="flex items-center gap-1.5 text-[12px] text-muted transition-colors hover:text-accent"
@@ -633,7 +645,7 @@ function CardFooter({ project }: { project: ProjectData }) {
 
 function FeaturedCard({ project, inView, reduced }: { project: ProjectData; inView: boolean; reduced: boolean }) {
   const [hovered, setHovered] = useState(false)
-  const primaryUrl = project.live ?? project.github
+  const primaryUrl = project.live ?? project.github ?? undefined
   return (
     <TiltCard disabled={reduced} className="h-full">
       <motion.article
@@ -644,16 +656,14 @@ function FeaturedCard({ project, inView, reduced }: { project: ProjectData; inVi
         whileHover={{ borderColor: 'rgba(202,255,87,0.32)' }}
         transition={{ duration: 0.22 }}
       >
-        <a href={primaryUrl} target="_blank" rel="noopener noreferrer" className="block" tabIndex={-1} aria-hidden="true">
-          <div style={{
-            height: 140, overflow: 'hidden',
-            borderRadius: '12px 12px 0 0',
-            borderBottom: '1px solid var(--color-border)',
-            background: 'var(--color-surface-2)',
-          }}>
-            <ProjectVisual type={project.visual} hovered={hovered} inView={inView} />
-          </div>
-        </a>
+        <div style={{
+          height: 140, overflow: 'hidden',
+          borderRadius: '12px 12px 0 0',
+          borderBottom: '1px solid var(--color-border)',
+          background: 'var(--color-surface-2)',
+        }}>
+          <ProjectVisual type={project.visual} hovered={hovered} inView={inView} />
+        </div>
         <div className="flex flex-1 flex-col gap-3 p-5">
           <CardMeta project={project} />
           <h3 className="text-[18px] font-semibold text-text">{project.name}</h3>
@@ -663,12 +673,12 @@ function FeaturedCard({ project, inView, reduced }: { project: ProjectData; inVi
           </div>
           <CardFooter project={project} />
           <AnimatePresence>
-            {hovered && (
+            {hovered && primaryUrl && (
               <motion.a
                 href={primaryUrl} target="_blank" rel="noopener noreferrer"
                 initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 4 }}
                 transition={{ duration: 0.2 }}
-                style={{ fontSize: '10px', fontFamily: MONO, color: '#CAFF57', letterSpacing: '0.14em', marginTop: 2 }}
+                style={{ fontSize: '10px', fontFamily: MONO, color: 'var(--color-accent)', letterSpacing: '0.14em', marginTop: 2 }}
                 onClick={e => e.stopPropagation()}
               >
                 VIEW PROJECT ↗
@@ -683,7 +693,7 @@ function FeaturedCard({ project, inView, reduced }: { project: ProjectData; inVi
 
 function StandardCard({ project, inView, reduced }: { project: ProjectData; inView: boolean; reduced: boolean }) {
   const [hovered, setHovered] = useState(false)
-  const primaryUrl = project.live ?? project.github
+  const primaryUrl = project.live ?? project.github ?? undefined
   return (
     <TiltCard disabled={reduced} className="h-full">
       <motion.article
@@ -694,16 +704,14 @@ function StandardCard({ project, inView, reduced }: { project: ProjectData; inVi
         whileHover={{ borderColor: 'rgba(202,255,87,0.32)' }}
         transition={{ duration: 0.22 }}
       >
-        <a href={primaryUrl} target="_blank" rel="noopener noreferrer" className="block" tabIndex={-1} aria-hidden="true">
-          <div style={{
-            height: 80, overflow: 'hidden',
-            borderRadius: '12px 12px 0 0',
-            borderBottom: '1px solid var(--color-border)',
-            background: 'var(--color-surface-2)',
-          }}>
-            <ProjectVisual type={project.visual} hovered={hovered} inView={inView} />
-          </div>
-        </a>
+        <div style={{
+          height: 80, overflow: 'hidden',
+          borderRadius: '12px 12px 0 0',
+          borderBottom: '1px solid var(--color-border)',
+          background: 'var(--color-surface-2)',
+        }}>
+          <ProjectVisual type={project.visual} hovered={hovered} inView={inView} />
+        </div>
         <div className="flex flex-1 flex-col gap-2 p-4">
           <CardMeta project={project} />
           <h3 className="text-[16px] font-semibold text-text">{project.name}</h3>
@@ -713,12 +721,12 @@ function StandardCard({ project, inView, reduced }: { project: ProjectData; inVi
           </div>
           <CardFooter project={project} />
           <AnimatePresence>
-            {hovered && (
+            {hovered && primaryUrl && (
               <motion.a
                 href={primaryUrl} target="_blank" rel="noopener noreferrer"
                 initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 4 }}
                 transition={{ duration: 0.2 }}
-                style={{ fontSize: '10px', fontFamily: MONO, color: '#CAFF57', letterSpacing: '0.14em', marginTop: 2 }}
+                style={{ fontSize: '10px', fontFamily: MONO, color: 'var(--color-accent)', letterSpacing: '0.14em', marginTop: 2 }}
                 onClick={e => e.stopPropagation()}
               >
                 VIEW PROJECT ↗
@@ -745,21 +753,28 @@ function StripCard({ project }: { project: ProjectData }) {
       }}
       transition={{ duration: 0.2 }}
     >
-      <div className="flex flex-wrap items-center gap-2 md:min-w-[280px]">
+      {/* Title block — h3 first so the name can never be lost in the wrap */}
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-2 md:min-w-[300px]">
         <span style={{ fontFamily: MONO, fontSize: '11px', color: 'var(--color-dim)', letterSpacing: '0.08em' }}>
           {project.number}
         </span>
-        <FlowGraph />
-        <span className="text-[15px] font-semibold text-text">{project.name}</span>
+        <h3 className="text-[15px] font-semibold text-text">{project.name}</h3>
         <StatusBadge status={project.status} />
+        <AgentsVisual />
       </div>
       <p className="flex-1 text-[13px] text-muted">{project.desc}</p>
       <div className="flex flex-wrap items-center gap-2 md:min-w-[220px] md:justify-end">
         {project.tags.slice(0, 3).map(t => <TagPill key={t} tag={t} />)}
-        <a href={project.github} target="_blank" rel="noopener noreferrer"
-          className="ml-2 flex items-center gap-1 text-[12px] text-muted transition-colors hover:text-accent">
-          <Github size={11} /> GitHub ↗
-        </a>
+        {project.github ? (
+          <a href={project.github} target="_blank" rel="noopener noreferrer"
+            className="ml-2 flex items-center gap-1 text-[12px] text-muted transition-colors hover:text-accent">
+            <Github size={11} /> GitHub ↗
+          </a>
+        ) : (
+          <span className="ml-2 flex items-center gap-1 text-[12px] text-dim">
+            <Lock size={10} /> {project.source ?? 'Private'}
+          </span>
+        )}
         {project.live && (
           <a href={project.live} target="_blank" rel="noopener noreferrer"
             className="flex items-center gap-1 text-[12px] text-muted transition-colors hover:text-accent">
@@ -791,10 +806,7 @@ function CardWrapper({ project, colClass, reduced }: { project: ProjectData; col
 export default function Projects() {
   const sectionRef = useRef<HTMLElement>(null)
   const inView     = useInView(sectionRef, { once: true, margin: '-80px' })
-  const reduced    =
-    typeof window !== 'undefined'
-      ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
-      : false
+  const reduced    = useReducedMotion()
 
   return (
     <section id="projects" ref={sectionRef} className="px-6 py-24">
@@ -808,7 +820,7 @@ export default function Projects() {
           className="mb-6"
         >
           <p className="mb-3 font-mono text-[12px] tracking-widest text-dim">— Projects</p>
-          <h2 className="text-[36px] font-medium text-text md:text-[40px]">
+          <h2 className="font-mono text-[30px] font-medium tracking-tight text-text md:text-[38px]">
             Things I&apos;ve shipped.
           </h2>
         </motion.div>

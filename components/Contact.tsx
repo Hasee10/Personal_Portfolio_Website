@@ -5,6 +5,7 @@ import { motion, useInView, useMotionValue, useSpring } from 'framer-motion'
 import { Mail, ExternalLink } from 'lucide-react'
 import { staggerContainer, fadeUp } from '@/lib/motion'
 import { META } from '@/lib/constants'
+import { useReducedMotion } from '@/lib/useReducedMotion'
 
 /* ── Magnetic contact card ─────────────────────────────────────────────────
  * Same spring-tracking technique as the Hero CTA buttons, but applied to the
@@ -60,13 +61,9 @@ function MagneticCard({
 }
 
 export default function Contact() {
-  const ref    = useRef<HTMLElement>(null)
-  const inView = useInView(ref, { once: true, margin: '-80px' })
-
-  const reduced =
-    typeof window !== 'undefined'
-      ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
-      : false
+  const ref     = useRef<HTMLElement>(null)
+  const inView  = useInView(ref, { once: true, margin: '-80px' })
+  const reduced = useReducedMotion()
 
   return (
     <section id="contact" ref={ref} className="px-6 py-24">
@@ -80,7 +77,7 @@ export default function Contact() {
           className="mb-12"
         >
           <p className="mb-3 font-mono text-[12px] tracking-widest text-dim">— Contact</p>
-          <h2 className="text-[36px] font-medium text-text md:text-[40px]">
+          <h2 className="font-mono text-[30px] font-medium tracking-tight text-text md:text-[38px]">
             Let&apos;s build something.
           </h2>
           <p className="mt-4 text-[16px] leading-7 text-muted">

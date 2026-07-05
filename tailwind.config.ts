@@ -19,6 +19,8 @@ const config: Config = {
         text:     'var(--color-text)',
         muted:    'var(--color-muted)',
         dim:      'var(--color-dim)',
+        edu:      'var(--color-edu)',
+        gold:     'var(--color-gold)',
       },
       fontFamily: {
         sans: ['var(--font-geist-sans)', 'system-ui', 'sans-serif'],
