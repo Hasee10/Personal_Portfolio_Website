@@ -120,19 +120,19 @@ const FILTERS: FilterType[] = ['ALL', 'EXPERIENCE', 'ACHIEVEMENT']
 
 // ── Config ────────────────────────────────────────────────────────────────────
 
-// Semantic type colors — token values: accent / edu / gold
+// Semantic type colors — token values: accent (sage) / edu / gold, all muted
 const TYPE_CONFIG: Record<EntryType, { color: string; bg: string }> = {
-  EXPERIENCE:  { color: '#CAFF57', bg: 'rgba(202,255,87,0.06)'  },
-  EDUCATION:   { color: '#57FFD8', bg: 'rgba(87,255,216,0.06)' },
-  ACHIEVEMENT: { color: '#FFD657', bg: 'rgba(255,214,87,0.06)' },
+  EXPERIENCE:  { color: '#9DBE8D', bg: 'rgba(157,190,141,0.06)' },
+  EDUCATION:   { color: '#7BC4AE', bg: 'rgba(123,196,174,0.06)' },
+  ACHIEVEMENT: { color: '#D9BC6E', bg: 'rgba(217,188,110,0.06)' },
 }
 
 const TAG_COLORS: Record<string, string> = {
-  VAPI: '#CAFF57', LangGraph: '#CAFF57', OpenAI: '#CAFF57', LangChain: '#CAFF57',
-  MLflow: '#CAFF57', AI: '#CAFF57',
-  n8n: '#57FFD8', FastAPI: '#57FFD8',
-  Supabase: '#FFD657', Docker: '#FFD657', Python: '#FFD657',
-  React: '#FF9557',
+  VAPI: '#9DBE8D', LangGraph: '#9DBE8D', OpenAI: '#9DBE8D', LangChain: '#9DBE8D',
+  MLflow: '#9DBE8D', AI: '#9DBE8D',
+  n8n: '#7BC4AE', FastAPI: '#7BC4AE',
+  Supabase: '#D9BC6E', Docker: '#D9BC6E', Python: '#D9BC6E',
+  React: '#C08D66',
 }
 
 const MONO = 'var(--font-geist-mono), monospace'
@@ -158,11 +158,11 @@ function LiveBadge() {
     <span style={{
       display: 'inline-flex', alignItems: 'center', gap: 5,
       fontSize: '9px', fontFamily: MONO, letterSpacing: '0.12em',
-      color: '#4ADE80', border: '1px solid rgba(74,222,128,0.3)',
-      background: 'rgba(74,222,128,0.06)', padding: '2px 7px', borderRadius: '999px',
+      color: '#6FBF84', border: '1px solid rgba(111,191,132,0.3)',
+      background: 'rgba(111,191,132,0.06)', padding: '2px 7px', borderRadius: '999px',
     }}>
       <motion.span
-        style={{ width: 5, height: 5, borderRadius: '50%', background: '#4ADE80', display: 'inline-block' }}
+        style={{ width: 5, height: 5, borderRadius: '50%', background: '#6FBF84', display: 'inline-block' }}
         animate={{ opacity: [1, 0.3, 1] }}
         transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
       />
@@ -431,7 +431,7 @@ export default function Timeline() {
                 padding: '4px 14px', borderRadius: '999px', cursor: 'pointer',
                 border: `1px solid ${filter === f ? 'var(--color-accent)' : 'var(--color-border)'}`,
                 color:      filter === f ? 'var(--color-accent)' : 'var(--color-muted)',
-                background: filter === f ? 'rgba(202,255,87,0.08)' : 'transparent',
+                background: filter === f ? 'rgba(157,190,141,0.08)' : 'transparent',
                 transition: 'all var(--dur) var(--ease-out)',
               }}
             >

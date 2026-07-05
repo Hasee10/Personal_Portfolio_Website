@@ -13,12 +13,12 @@ import { useReducedMotion } from '@/lib/useReducedMotion'
  */
 const GROUP_CFG: Record<string, { color: string; span: string; blurb: string }> = {
   'LLM Stack': {
-    color: '#CAFF57', // token: accent
+    color: '#9DBE8D', // token: accent (sage)
     span:  'col-span-12 md:col-span-7',
     blurb: 'Models, orchestration, retrieval',
   },
   'Agentic Infra': {
-    color: '#57FFD8', // token: edu
+    color: '#7BC4AE', // token: edu
     span:  'col-span-12 md:col-span-5',
     blurb: 'Voice, automation, pipelines',
   },
@@ -28,7 +28,7 @@ const GROUP_CFG: Record<string, { color: string; span: string; blurb: string }> 
     blurb: 'APIs, data stores, deployment',
   },
   Frontend: {
-    color: '#FFD657', // token: gold
+    color: '#D9BC6E', // token: gold
     span:  'col-span-12 md:col-span-5',
     blurb: 'Interfaces that ship with the system',
   },

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useRef } from 'react'
 import { motion, useMotionValue, useSpring } from 'framer-motion'
 import { ArrowDown } from 'lucide-react'
 import { META } from '@/lib/constants'
@@ -61,99 +61,203 @@ function MagneticAnchor({
   )
 }
 
-/* ── Node-graph SVG ────────────────────────────────────────────────────────
- * Agentic-systems identity mark. One infinite rotate transform on a <g> —
- * no canvas, no render loop, degrades to a static graph under reduced motion.
+/* ── Stack node graph — the site's signature motion moment ─────────────────
+ * Maps the real stack as a structure: an AI hub connected to the seven
+ * domains actually worked in. Labels are information, so the graph does NOT
+ * rotate (rotating labels are unreadable). Motion budget:
+ *   entrance — edges draw in stagger, nodes pop, labels fade
+ *   idle     — hub pulse, data-flow dots along edges, gentle per-node float
+ *   hover    — node glows and a descriptor readout shows that node's tools
+ * All SVG + transform/opacity. No canvas, no render loop beyond framer's own.
  */
-const NODES = [
-  { x: 200, y: 70  },
-  { x: 330, y: 140 },
-  { x: 355, y: 268 },
-  { x: 248, y: 348 },
-  { x: 102, y: 330 },
-  { x:  62, y: 200 },
-  { x: 128, y: 108 },
-  { x: 210, y: 210 }, // index 7 — highlighted hub
+interface StackNode {
+  x: number
+  y: number
+  label: string
+  detail: string
+  // label offset direction (unit-ish vector away from hub)
+  lx: number
+  ly: number
+}
+
+const HUB = { x: 210, y: 210 }
+
+const NODES: StackNode[] = [
+  { x: 200, y: 70,  label: 'LLM',      detail: 'OpenAI · Gemini · Groq · Mistral', lx: 0,    ly: -22 },
+  { x: 330, y: 140, label: 'RAG',      detail: 'FAISS · LangChain · embeddings',   lx: 26,   ly: -8  },
+  { x: 355, y: 268, label: 'Agents',   detail: 'LangGraph · n8n · tool use',       lx: 30,   ly: 16  },
+  { x: 248, y: 348, label: 'Voice AI', detail: 'VAPI · LiveKit · ElevenLabs',      lx: 14,   ly: 26  },
+  { x: 102, y: 330, label: 'Data',     detail: 'Scrapy · SQL · Power BI',          lx: -18,  ly: 26  },
+  { x: 62,  y: 200, label: 'Backend',  detail: 'FastAPI · Postgres · Redis',       lx: -32,  ly: -6  },
+  { x: 128, y: 108, label: 'Frontend', detail: 'React · Next.js · Tailwind',       lx: -26,  ly: -18 },
 ]
 
+// Edges: ring around the perimeter + spokes into the hub (index 7 = hub)
 const EDGES: [number, number][] = [
-  [0, 1], [0, 6], [0, 7],
-  [1, 2], [1, 7],
-  [2, 3], [2, 7],
-  [3, 4], [3, 7],
-  [4, 5], [4, 7],
-  [5, 6], [6, 7],
+  [0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 0],
+  [0, 7], [1, 7], [2, 7], [3, 7], [4, 7], [5, 7], [6, 7],
 ]
+
+// Edges that carry an animated data-flow dot (spokes only, staggered)
+const FLOW_EDGES = [7, 9, 11, 13] // indices into EDGES
+
+function pointOf(i: number) {
+  return i === 7 ? HUB : NODES[i]
+}
 
 function NodeGraph({ reduced }: { reduced: boolean }) {
+  const [hovered, setHovered] = useState<number | null>(null)
+
   return (
-    <motion.svg
-      viewBox="0 0 420 420"
-      className="w-full max-w-[400px]"
-      aria-hidden="true"
-    >
-      <motion.g
-        animate={reduced ? {} : { rotate: 360 }}
-        transition={{ duration: 80, ease: 'linear', repeat: Infinity }}
-        style={{ transformOrigin: '210px 210px' }}
+    <div className="flex flex-col items-center gap-3">
+      <motion.svg
+        viewBox="0 0 420 420"
+        className="w-full max-w-[300px] lg:max-w-[400px]"
+        role="img"
+        aria-label="Stack graph: an AI hub connecting LLM, RAG, Agents, Voice AI, Data, Backend, and Frontend"
       >
-        {/* Edges */}
+        {/* Edges — draw in on load */}
         {EDGES.map(([a, b], i) => {
-          const na = NODES[a]
-          const nb = NODES[b]
+          const na = pointOf(a)
+          const nb = pointOf(b)
+          const touched = hovered !== null && (a === hovered || b === hovered)
           return (
             <motion.line
               key={`e${i}`}
               x1={na.x} y1={na.y}
               x2={nb.x} y2={nb.y}
               stroke="var(--color-accent-2)"
-              strokeOpacity="0.55"
-              strokeWidth="0.8"
-              initial={reduced ? {} : { pathLength: 0, opacity: 0 }}
-              animate={{ pathLength: 1, opacity: 1 }}
-              transition={{ duration: 0.6, delay: 0.5 + i * 0.04, ease: 'easeInOut' }}
+              strokeWidth={touched ? 1.4 : 0.8}
+              initial={reduced ? { pathLength: 1, opacity: 1 } : { pathLength: 0, opacity: 0 }}
+              animate={{ pathLength: 1, opacity: touched ? 0.9 : 0.5 }}
+              transition={{ duration: 0.6, delay: reduced ? 0 : 0.4 + i * 0.05, ease: 'easeInOut' }}
             />
           )
         })}
 
-        {/* Nodes */}
-        {NODES.map((node, i) => {
-          const hub = i === 7
+        {/* Data-flow dots along spoke edges — "requests moving through the system" */}
+        {!reduced && FLOW_EDGES.map((ei, k) => {
+          const [a] = EDGES[ei]
+          const from = pointOf(a)
           return (
             <motion.circle
-              key={`n${i}`}
-              cx={node.x}
-              cy={node.y}
-              r={hub ? 14 : 9}
-              fill={hub ? 'var(--color-accent)' : 'var(--color-surface-2)'}
-              fillOpacity={hub ? 0.15 : 1}
-              stroke={hub ? 'var(--color-accent)' : 'var(--color-border-2)'}
-              strokeWidth={hub ? 1.5 : 1}
-              initial={reduced ? {} : { scale: 0, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
+              key={`f${k}`}
+              r={2.5}
+              fill="var(--color-accent)"
+              initial={{ opacity: 0 }}
+              animate={{
+                cx: [from.x, HUB.x],
+                cy: [from.y, HUB.y],
+                opacity: [0, 0.9, 0],
+              }}
               transition={{
-                duration: 0.4,
-                delay: i * 0.08,
-                ease: [0.34, 1.56, 0.64, 1],
+                duration: 1.8,
+                delay: 2 + k * 0.9,
+                repeat: Infinity,
+                repeatDelay: 2.6,
+                ease: 'easeInOut',
               }}
             />
           )
         })}
 
-        {/* Pulsing ring on hub */}
+        {/* Domain nodes + labels */}
+        {NODES.map((node, i) => {
+          const isHovered = hovered === i
+          return (
+            <motion.g
+              key={`n${i}`}
+              onMouseEnter={() => setHovered(i)}
+              onMouseLeave={() => setHovered(null)}
+              style={{ cursor: 'default' }}
+              animate={reduced ? {} : { y: [0, i % 2 === 0 ? -3 : 3, 0] }}
+              transition={{ duration: 5 + i * 0.7, repeat: Infinity, ease: 'easeInOut' }}
+            >
+              {/* Hover halo */}
+              <motion.circle
+                cx={node.x} cy={node.y} r={16}
+                fill="var(--color-accent)"
+                initial={false}
+                animate={{ opacity: isHovered ? 0.12 : 0 }}
+                transition={{ duration: 0.2 }}
+              />
+              <motion.circle
+                cx={node.x} cy={node.y} r={9}
+                fill="var(--color-surface-2)"
+                stroke={isHovered ? 'var(--color-accent)' : 'var(--color-border-2)'}
+                strokeWidth={isHovered ? 1.5 : 1}
+                initial={reduced ? { scale: 1, opacity: 1 } : { scale: 0, opacity: 0 }}
+                animate={{ scale: isHovered ? 1.2 : 1, opacity: 1 }}
+                transition={{
+                  duration: 0.4,
+                  delay: reduced ? 0 : i * 0.08,
+                  ease: [0.34, 1.56, 0.64, 1],
+                }}
+                style={{ transformOrigin: `${node.x}px ${node.y}px` }}
+              />
+              <motion.text
+                x={node.x + node.lx}
+                y={node.y + node.ly}
+                textAnchor="middle"
+                dominantBaseline="middle"
+                fill={isHovered ? 'var(--color-accent)' : 'var(--color-muted)'}
+                style={{ fontFamily: 'var(--font-geist-mono), monospace', fontSize: 11, letterSpacing: '0.04em' }}
+                initial={reduced ? { opacity: 1 } : { opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.4, delay: reduced ? 0 : 0.9 + i * 0.06 }}
+              >
+                {node.label}
+              </motion.text>
+            </motion.g>
+          )
+        })}
+
+        {/* Hub */}
         <motion.circle
-          cx={NODES[7].x}
-          cy={NODES[7].y}
-          r={22}
+          cx={HUB.x} cy={HUB.y} r={15}
+          fill="var(--color-accent)" fillOpacity={0.14}
+          stroke="var(--color-accent)" strokeWidth={1.5}
+          initial={reduced ? { scale: 1, opacity: 1 } : { scale: 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.5, delay: reduced ? 0 : 0.2, ease: [0.34, 1.56, 0.64, 1] }}
+          style={{ transformOrigin: `${HUB.x}px ${HUB.y}px` }}
+        />
+        <motion.text
+          x={HUB.x} y={HUB.y + 1}
+          textAnchor="middle" dominantBaseline="middle"
+          fill="var(--color-accent)"
+          style={{ fontFamily: 'var(--font-geist-mono), monospace', fontSize: 11, fontWeight: 600 }}
+          initial={reduced ? { opacity: 1 } : { opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.4, delay: reduced ? 0 : 0.6 }}
+        >
+          AI
+        </motion.text>
+
+        {/* Hub pulse ring */}
+        <motion.circle
+          cx={HUB.x} cy={HUB.y} r={24}
           fill="none"
           stroke="var(--color-accent)"
           strokeWidth="1"
-          animate={reduced ? {} : { opacity: [0.4, 0, 0.4], scale: [1, 1.7, 1] }}
+          animate={reduced ? { opacity: 0.25 } : { opacity: [0.4, 0, 0.4], scale: [1, 1.6, 1] }}
           transition={{ duration: 2.5, ease: 'easeInOut', repeat: Infinity }}
-          style={{ transformOrigin: `${NODES[7].x}px ${NODES[7].y}px` }}
+          style={{ transformOrigin: `${HUB.x}px ${HUB.y}px` }}
         />
-      </motion.g>
-    </motion.svg>
+      </motion.svg>
+
+      {/* Descriptor readout — shows the hovered node's real tools */}
+      <p
+        aria-live="polite"
+        className="min-h-[1.25rem] font-mono text-[11px] tracking-wide text-dim"
+      >
+        {hovered !== null ? (
+          <span className="text-muted">{NODES[hovered].label} — {NODES[hovered].detail}</span>
+        ) : (
+          <span>hover a node</span>
+        )}
+      </p>
+    </div>
   )
 }
 
@@ -161,41 +265,13 @@ function NodeGraph({ reduced }: { reduced: boolean }) {
 export default function Hero() {
   const reduced = useReducedMotion()
 
-  const tagline = META.tagline
-  const [typedChars, setTypedChars]   = useState(0)
-  const [showCursor, setShowCursor]   = useState(false)
-  const [startTyping, setStartTyping] = useState(false)
-
-  // Reduced motion: show the full tagline immediately, no typing.
-  useEffect(() => {
-    if (!reduced) return
-    setTypedChars(tagline.length)
-    setShowCursor(true)
-    setStartTyping(true)
-  }, [reduced, tagline.length])
-
-  useEffect(() => {
-    if (reduced) return
-    const t = setTimeout(() => setStartTyping(true), 1300)
-    return () => clearTimeout(t)
-  }, [reduced])
-
-  useEffect(() => {
-    if (reduced || !startTyping || typedChars >= tagline.length) {
-      if (startTyping) setShowCursor(true)
-      return
-    }
-    const t = setTimeout(() => setTypedChars((n) => n + 1), 40)
-    return () => clearTimeout(t)
-  }, [reduced, startTyping, typedChars, tagline.length])
-
   return (
     <section
       id="home"
       className="flex min-h-screen items-center bg-transparent px-6 pt-24"
     >
       <div className="mx-auto w-full max-w-5xl">
-        <div className="flex flex-col gap-16 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex flex-col gap-14 lg:flex-row lg:items-center lg:justify-between">
 
           {/* ── Left column ──────────────────────────── */}
           <div className="flex flex-1 flex-col gap-6 lg:max-w-[540px]">
@@ -206,7 +282,7 @@ export default function Hero() {
               variants={reduced ? undefined : fadeIn}
               initial={reduced ? undefined : 'hidden'}
               animate="visible"
-              transition={{ delay: 0.3 }}
+              transition={{ delay: 0.2 }}
             >
               — AI / LLM Engineer
             </motion.p>
@@ -216,20 +292,23 @@ export default function Hero() {
               className="font-mono text-[34px] font-semibold leading-tight tracking-tight text-text md:text-[50px]"
               initial={reduced ? {} : { opacity: 0, y: 20, filter: 'blur(8px)' }}
               animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-              transition={{ duration: 0.75, delay: 0.55, ease: easeOutExpo }}
+              transition={{ duration: 0.75, delay: 0.4, ease: easeOutExpo }}
             >
               {META.name}
             </motion.h1>
 
-            {/* Signature moment: terminal typewriter tagline */}
-            <div className="min-h-[2.5rem] font-mono text-[18px] font-medium text-accent md:text-[21px]">
+            {/* Tagline — terminal prompt styling, quiet fade (the node graph
+                is the signature moment; this stays out of its way) */}
+            <motion.p
+              className="font-mono text-[18px] font-medium text-accent md:text-[21px]"
+              initial={reduced ? {} : { opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.8 }}
+            >
               <span aria-hidden="true" className="text-dim">$ </span>
-              <span className="sr-only">{tagline}</span>
-              <span aria-hidden="true">{tagline.slice(0, typedChars)}</span>
-              {showCursor && (
-                <span aria-hidden="true" className="cursor-blink ml-0.5 inline-block">▌</span>
-              )}
-            </div>
+              {META.tagline}
+              <span aria-hidden="true" className="cursor-blink ml-0.5 inline-block">▌</span>
+            </motion.p>
 
             {/* Bio */}
             <motion.p
@@ -246,7 +325,7 @@ export default function Hero() {
               className="flex flex-row gap-3"
               initial={reduced ? {} : { opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 1.2, ease: easeOutExpo }}
+              transition={{ duration: 0.6, delay: 1.15, ease: easeOutExpo }}
             >
               <MagneticAnchor
                 href="/projects"
@@ -271,14 +350,15 @@ export default function Hero() {
               className="mt-2"
               initial={reduced ? {} : { opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.5, delay: 1.6 }}
+              transition={{ duration: 0.5, delay: 1.5 }}
             >
               <ArrowDown size={20} className="bounce-down text-dim" />
             </motion.div>
           </div>
 
-          {/* ── Right column: SVG node graph ─────────── */}
-          <div className="hidden items-center justify-center lg:flex lg:w-[40%]">
+          {/* ── Right column: stack node graph (signature moment) ──
+              Shown on mobile too — it's a cheap SVG and it IS the identity. */}
+          <div className="flex items-center justify-center lg:w-[42%]">
             <div className="relative flex items-center justify-center">
               {/* Soft ambient glow behind the graph */}
               <div
@@ -287,6 +367,7 @@ export default function Hero() {
                 style={{
                   width: '480px',
                   height: '480px',
+                  maxWidth: '90vw',
                   background: 'radial-gradient(ellipse at center, rgba(78,107,69,0.10) 0%, rgba(78,107,69,0.03) 50%, transparent 75%)',
                   filter: 'blur(24px)',
                 }}

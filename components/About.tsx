@@ -95,7 +95,7 @@ export default function About() {
               {/* Accent corner */}
               <div
                 className="absolute -bottom-2 -right-2 h-12 w-12 rounded-lg border border-accent/20"
-                style={{ background: 'rgba(202,255,87,0.04)' }}
+                style={{ background: 'rgba(157,190,141,0.05)' }}
               />
             </div>
           </motion.div>

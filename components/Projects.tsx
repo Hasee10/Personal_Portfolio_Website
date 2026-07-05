@@ -130,28 +130,28 @@ const COL_CLASSES: Record<string, string> = {
 // ── Config ────────────────────────────────────────────────────────────────────
 
 const STATUS_CFG: Record<Status, { color: string; bg: string; dot: boolean }> = {
-  PRODUCTION:    { color: '#4ADE80', bg: 'rgba(74,222,128,0.08)',  dot: true  },
-  RESEARCH:      { color: '#FBBF24', bg: 'rgba(251,191,36,0.08)',  dot: false },
-  'OPEN SOURCE': { color: '#60A5FA', bg: 'rgba(96,165,250,0.08)',  dot: false },
+  PRODUCTION:    { color: '#6FBF84', bg: 'rgba(111,191,132,0.08)',  dot: true  },
+  RESEARCH:      { color: '#C9A84C', bg: 'rgba(201,168,76,0.08)',  dot: false },
+  'OPEN SOURCE': { color: '#7BA7D9', bg: 'rgba(123,167,217,0.08)',  dot: false },
   INTERNAL:      { color: '#8A9A7E', bg: 'rgba(138,154,126,0.08)', dot: false },
 }
 
 const TAG_COLORS: Record<string, string> = {
   // LLM / AI
-  VAPI: '#CAFF57', Gemini: '#CAFF57', Groq: '#CAFF57', Mistral: '#CAFF57',
-  OpenAI: '#CAFF57', LangChain: '#CAFF57', LangGraph: '#CAFF57',
-  HuggingFace: '#CAFF57', 'Voice AI': '#CAFF57', LiveKit: '#CAFF57',
-  FAISS: '#CAFF57',
+  VAPI: '#9DBE8D', Gemini: '#9DBE8D', Groq: '#9DBE8D', Mistral: '#9DBE8D',
+  OpenAI: '#9DBE8D', LangChain: '#9DBE8D', LangGraph: '#9DBE8D',
+  HuggingFace: '#9DBE8D', 'Voice AI': '#9DBE8D', LiveKit: '#9DBE8D',
+  FAISS: '#9DBE8D',
   // Infra / backend
-  n8n: '#57FFD8', FastAPI: '#57FFD8', WebSocket: '#57FFD8', Tavily: '#57FFD8',
-  Flask: '#57FFD8',
+  n8n: '#7BC4AE', FastAPI: '#7BC4AE', WebSocket: '#7BC4AE', Tavily: '#7BC4AE',
+  Flask: '#7BC4AE',
   // Data / algo
-  Supabase: '#FFD657', Redis: '#FFD657', Scrapy: '#FFD657',
-  Python: '#FFD657', NLP: '#FFD657', 'A* Search': '#FFD657',
-  CSP: '#FFD657', Simulation: '#FFD657',
+  Supabase: '#D9BC6E', Redis: '#D9BC6E', Scrapy: '#D9BC6E',
+  Python: '#D9BC6E', NLP: '#D9BC6E', 'A* Search': '#D9BC6E',
+  CSP: '#D9BC6E', Simulation: '#D9BC6E',
   // Frontend
-  React: '#FF9557', 'Next.js': '#FF9557', 'React-PDF': '#FF9557',
-  TypeScript: '#FF9557',
+  React: '#C08D66', 'Next.js': '#C08D66', 'React-PDF': '#C08D66',
+  TypeScript: '#C08D66',
 }
 
 const MONO = 'var(--font-geist-mono), monospace'
@@ -180,7 +180,7 @@ function StatusBadge({ status }: { status: Status }) {
 }
 
 function TagPill({ tag }: { tag: string }) {
-  const color = TAG_COLORS[tag] ?? 'rgba(202,255,87,0.35)'
+  const color = TAG_COLORS[tag] ?? 'rgba(157,190,141,0.35)'
   return (
     <span style={{
       fontSize: '10px', fontFamily: MONO, color,
@@ -205,7 +205,7 @@ function WaveformVisual({ hovered, inView }: { hovered: boolean; inView: boolean
         const x    = 18 + i * 22
         return (
           <motion.rect
-            key={i} x={x} width={4} rx={2} fill="#CAFF57"
+            key={i} x={x} width={4} rx={2} fill="#9DBE8D"
             fillOpacity={0.35 + (i % 3) * 0.2}
             animate={inView ? {
               height: [minH, maxH, minH],
@@ -222,11 +222,9 @@ function WaveformVisual({ hovered, inView }: { hovered: boolean; inView: boolean
   )
 }
 
+// Two-pass SOW document being written — draft column feeds a refined column.
+// Density matched to the other card visuals so the grid reads consistent.
 function DocumentVisual({ hovered, inView }: { hovered: boolean; inView: boolean }) {
-  const lines = [
-    { width: 190, y: 12 }, { width: 148, y: 26 }, { width: 210, y: 40 },
-    { width: 168, y: 54 }, { width: 126, y: 68 }, { width:  98, y: 82 },
-  ]
   const spd = hovered ? 0.55 : 1
   const [cursorOn, setCursorOn] = useState(true)
 
@@ -236,24 +234,62 @@ function DocumentVisual({ hovered, inView }: { hovered: boolean; inView: boolean
     return () => clearInterval(id)
   }, [inView])
 
+  // Left column: raw draft (pass 1). Right column: refined SOW (pass 2).
+  const draft = [
+    { w: 96, y: 30 }, { w: 76, y: 40 }, { w: 104, y: 50 },
+    { w: 84, y: 60 }, { w: 60, y: 70 }, { w: 92, y: 80 },
+  ]
+  const refined = [
+    { w: 100, y: 30, hot: false }, { w: 82, y: 40, hot: true }, { w: 96, y: 50, hot: false },
+    { w: 70, y: 60, hot: false }, { w: 88, y: 70, hot: true }, { w: 54, y: 80, hot: false },
+  ]
+
   return (
     <svg viewBox="0 0 300 100" width="100%" height="100%" aria-hidden="true">
-      {lines.map((line, i) => (
+      {/* Page frames */}
+      <rect x={12} y={10} width={118} height={82} rx={4} fill="#9DBE8D" fillOpacity={0.03} stroke="#3A4A28" strokeWidth={0.8} />
+      <rect x={170} y={10} width={118} height={82} rx={4} fill="#9DBE8D" fillOpacity={0.05} stroke="#9DBE8D" strokeWidth={0.8} strokeOpacity={0.4} />
+
+      {/* Column headers */}
+      <text x={20} y={22} fill="#3A4A28" fontSize={7} fontFamily={MONO}>PASS 1 · DRAFT</text>
+      <text x={178} y={22} fill="#9DBE8D" fontSize={7} fontFamily={MONO}>PASS 2 · SOW</text>
+
+      {/* Draft lines — steady texture */}
+      {draft.map((l, i) => (
         <motion.rect
-          key={i} x={16} y={line.y} height={2} rx={1}
-          fill={i === 2 ? '#CAFF57' : '#3A4A28'}
-          fillOpacity={i === 2 ? 1 : 0.6}
+          key={`d${i}`} x={20} y={l.y} height={2} rx={1}
+          fill="#3A4A28" fillOpacity={0.7}
+          animate={inView ? { width: l.w } : { width: l.w * 0.3 }}
+          transition={{ duration: 0.5, delay: i * 0.1 }}
+        />
+      ))}
+
+      {/* Arrow between passes */}
+      <line x1={136} y1={51} x2={162} y2={51} stroke="#3A4A28" strokeWidth={0.8} />
+      <polygon points="164,51 159,48.5 159,53.5" fill="#3A4A28" />
+      <motion.circle
+        r={2.5} fill="#9DBE8D"
+        animate={inView ? { cx: [136, 162], cy: 51, opacity: [0, 1, 0] } : { opacity: 0 }}
+        transition={{ duration: 1.1 * spd, repeat: Infinity, repeatDelay: 0.6, ease: 'easeInOut' }}
+      />
+
+      {/* Refined lines — typed in cyclically */}
+      {refined.map((l, i) => (
+        <motion.rect
+          key={`r${i}`} x={178} y={l.y} height={2} rx={1}
+          fill={l.hot ? '#9DBE8D' : '#3A4A28'}
+          fillOpacity={l.hot ? 0.95 : 0.6}
           animate={inView
-            ? { width: [0, line.width, line.width, 0] }
-            : { width: line.width * 0.2 }}
+            ? { width: [0, l.w, l.w, 0] }
+            : { width: l.w * 0.25 }}
           transition={inView ? {
-            duration: 3.2 * spd, times: [0, 0.38, 0.78, 1],
-            repeat: Infinity, delay: i * 0.28, ease: 'easeInOut',
+            duration: 3.4 * spd, times: [0, 0.35, 0.8, 1],
+            repeat: Infinity, delay: i * 0.26, ease: 'easeInOut',
           } : { duration: 0 }}
         />
       ))}
       {inView && (
-        <rect x={230} y={36} width={3} height={10} fill="#CAFF57" fillOpacity={cursorOn ? 1 : 0} />
+        <rect x={272} y={76} width={3} height={9} fill="#9DBE8D" fillOpacity={cursorOn ? 1 : 0} />
       )}
     </svg>
   )
@@ -273,7 +309,7 @@ function SpiderVisual({ hovered, inView }: { hovered: boolean; inView: boolean }
         <motion.line
           key={`e${i}`}
           x1={CX} y1={CY} x2={nd.x} y2={nd.y}
-          stroke="#CAFF57" strokeWidth="0.8" strokeOpacity={0.55}
+          stroke="#9DBE8D" strokeWidth="0.8" strokeOpacity={0.55}
           strokeDasharray={R}
           animate={inView ? { strokeDashoffset: [R, 0, 0, R] } : { strokeDashoffset: R }}
           transition={inView ? {
@@ -282,14 +318,18 @@ function SpiderVisual({ hovered, inView }: { hovered: boolean; inView: boolean }
           } : { duration: 0 }}
         />
       ))}
-      <circle cx={CX} cy={CY} r={9} fill="#CAFF57" fillOpacity={0.12} stroke="#CAFF57" strokeWidth={1} />
-      <text x={CX} y={CY + 1} textAnchor="middle" dominantBaseline="middle" fill="#CAFF57" fontSize={6.5} fontFamily={MONO}>AI</text>
+      {/* Satellite site dots — the 155-site crawl surface */}
+      {[[62,22],[92,64],[52,78],[228,20],[248,58],[236,84],[196,14],[104,14],[262,34],[38,44]].map(([x, y], i) => (
+        <circle key={`s${i}`} cx={x} cy={y} r={1.8} fill="#3A4A28" fillOpacity={0.7} />
+      ))}
+      <circle cx={CX} cy={CY} r={9} fill="#9DBE8D" fillOpacity={0.12} stroke="#9DBE8D" strokeWidth={1} />
+      <text x={CX} y={CY + 1} textAnchor="middle" dominantBaseline="middle" fill="#9DBE8D" fontSize={6.5} fontFamily={MONO}>AI</text>
       {nodes.map((nd, i) => (
-        <circle key={`n${i}`} cx={nd.x} cy={nd.y} r={4} fill="#CAFF57" fillOpacity={0.6} />
+        <circle key={`n${i}`} cx={nd.x} cy={nd.y} r={4} fill="#9DBE8D" fillOpacity={0.6} />
       ))}
       {inView && nodes.map((nd, i) => (
         <motion.circle
-          key={`d${i}`} r={2} fill="#CAFF57"
+          key={`d${i}`} r={2} fill="#9DBE8D"
           animate={{ cx: [CX, nd.x, CX], cy: [CY, nd.y, CY], opacity: [0, 1, 0] }}
           transition={{ duration: 2.4 * spd, repeat: Infinity, delay: i * 0.5, ease: 'easeInOut' }}
         />
@@ -330,7 +370,7 @@ function BenchmarkVisual({ inView }: { hovered: boolean; inView: boolean }) {
             x={OX + col * (SQ + GAP)} y={OY + row * (SQ + GAP)}
             width={SQ} height={SQ} rx={2}
             style={{ fill: '#181C12', fillOpacity: 0.4 }}
-            animate={{ fill: filled ? (isPass ? '#CAFF57' : '#FF4757') : '#181C12', fillOpacity: filled ? 0.85 : 0.4 }}
+            animate={{ fill: filled ? (isPass ? '#9DBE8D' : '#CE6B6B') : '#181C12', fillOpacity: filled ? 0.85 : 0.4 }}
             transition={{ duration: 0.18 }}
           />
         )
@@ -352,15 +392,23 @@ function FunnelVisual({ inView }: { hovered: boolean; inView: boolean }) {
 
   return (
     <svg viewBox="0 0 300 100" width="100%" height="100%" aria-hidden="true">
+      {/* Scale gridlines — call volume texture */}
+      {[6, 47, 88, 129, 170].map((x, i) => (
+        <line key={i} x1={x} y1={8} x2={x} y2={84} stroke="#3A4A28" strokeWidth={0.5} strokeOpacity={0.5} strokeDasharray="2 4" />
+      ))}
       {stages.map((s, i) => (
         <g key={i}>
           <motion.rect
             x={6} y={s.y} height={10} rx={2}
-            fill="#CAFF57" fillOpacity={s.opacity}
+            fill="#9DBE8D" fillOpacity={s.opacity}
             animate={inView ? { width: [0, s.w] } : { width: s.w * 0.15 }}
             transition={inView ? { duration: 0.8, delay: i * 0.18, ease: 'easeOut' } : { duration: 0 }}
           />
-          <text x={182} y={s.y + 8} fill={s.accent ? '#CAFF57' : '#3A4A28'} fontSize={8} fontFamily={MONO}>{s.label}</text>
+          <text x={182} y={s.y + 8} fill={s.accent ? '#9DBE8D' : '#3A4A28'} fontSize={8} fontFamily={MONO}>{s.label}</text>
+          {/* Flow connector between stages */}
+          {i < stages.length - 1 && (
+            <line x1={14} y1={s.y + 10} x2={14} y2={s.y + 20} stroke="#9DBE8D" strokeWidth={0.8} strokeOpacity={0.35} />
+          )}
         </g>
       ))}
       <text x={294} y={92} textAnchor="end" fill="#3A4A28" fontSize={7} fontFamily={MONO}>NO HUMAN IN THE LOOP</text>
@@ -375,8 +423,8 @@ function RAGVisual({ hovered, inView }: { hovered: boolean; inView: boolean }) {
   return (
     <svg viewBox="0 0 300 100" width="100%" height="100%" aria-hidden="true">
       {/* Stage 1: QUERY box */}
-      <rect x="8" y="33" width="46" height="24" rx="4" fill="#CAFF57" fillOpacity="0.06" stroke="#CAFF57" strokeWidth="0.8" strokeOpacity="0.5" />
-      <text x="31" y="47" textAnchor="middle" dominantBaseline="middle" fill="#CAFF57" fontSize="7" fontFamily={MONO}>QUERY</text>
+      <rect x="8" y="33" width="46" height="24" rx="4" fill="#9DBE8D" fillOpacity="0.06" stroke="#9DBE8D" strokeWidth="0.8" strokeOpacity="0.5" />
+      <text x="31" y="47" textAnchor="middle" dominantBaseline="middle" fill="#9DBE8D" fontSize="7" fontFamily={MONO}>QUERY</text>
 
       {/* Connector arrow 1 */}
       <line x1="54" y1="45" x2="84" y2="45" stroke="#3A4A28" strokeWidth="0.8" />
@@ -385,7 +433,7 @@ function RAGVisual({ hovered, inView }: { hovered: boolean; inView: boolean }) {
       {/* Stage 2: Vector cluster */}
       {[[102,30],[116,42],[108,55],[126,38],[120,62],[136,50]].map(([x, y], i) => (
         <motion.circle key={i} cx={x} cy={y} r={3.5}
-          fill="#57FFD8" fillOpacity={0.65}
+          fill="#7BC4AE" fillOpacity={0.65}
           animate={inView ? { fillOpacity: [0.3, 0.85, 0.3], r: [3, 4.2, 3] } : {}}
           transition={{ duration: 1.6, repeat: Infinity, delay: i * 0.22, ease: 'easeInOut' }}
         />
@@ -397,14 +445,14 @@ function RAGVisual({ hovered, inView }: { hovered: boolean; inView: boolean }) {
       <polygon points="178,45 174,42.5 174,47.5" fill="#3A4A28" />
 
       {/* Stage 3: LLM circle */}
-      <circle cx="210" cy="45" r="24" fill="#CAFF57" fillOpacity="0.05" stroke="#CAFF57" strokeWidth="0.8" />
-      <text x="210" y="41" textAnchor="middle" dominantBaseline="middle" fill="#CAFF57" fontSize="7" fontFamily={MONO}>LLM</text>
-      <text x="210" y="52" textAnchor="middle" dominantBaseline="middle" fill="#CAFF57" fontSize="5.5" fontFamily={MONO} fillOpacity="0.6">MODEL</text>
+      <circle cx="210" cy="45" r="24" fill="#9DBE8D" fillOpacity="0.05" stroke="#9DBE8D" strokeWidth="0.8" />
+      <text x="210" y="41" textAnchor="middle" dominantBaseline="middle" fill="#9DBE8D" fontSize="7" fontFamily={MONO}>LLM</text>
+      <text x="210" y="52" textAnchor="middle" dominantBaseline="middle" fill="#9DBE8D" fontSize="5.5" fontFamily={MONO} fillOpacity="0.6">MODEL</text>
 
       {/* Output lines */}
       {[[254, 34, 32], [254, 43, 26], [254, 52, 20]].map(([x, y, w], i) => (
         <motion.rect key={i}
-          x={x} y={y} height={2} rx={1} fill="#CAFF57"
+          x={x} y={y} height={2} rx={1} fill="#9DBE8D"
           fillOpacity={0.55 - i * 0.12}
           animate={inView ? { width: [0, w] } : { width: 0 }}
           transition={inView ? {
@@ -417,7 +465,7 @@ function RAGVisual({ hovered, inView }: { hovered: boolean; inView: boolean }) {
 
       {/* Animated retrieval dot */}
       {inView && (
-        <motion.circle r="3.5" fill="#CAFF57" fillOpacity="0.9"
+        <motion.circle r="3.5" fill="#9DBE8D" fillOpacity="0.9"
           animate={{
             cx: [31, 31, 119, 210, 210],
             cy: [45, 45,  45,  45,  45],
@@ -465,28 +513,28 @@ function PathfindingVisual({ hovered, inView }: { hovered: boolean; inView: bool
       {walls.map((w, i) => (
         <g key={i}>
           <rect x={w.x} y={w.y} width={w.w} height={w.h} rx={2}
-            fill="#FF4757" fillOpacity={0.1} stroke="#FF4757" strokeWidth="0.8" strokeOpacity={0.35} />
+            fill="#CE6B6B" fillOpacity={0.1} stroke="#CE6B6B" strokeWidth="0.8" strokeOpacity={0.35} />
           <text x={w.x + w.w / 2} y={w.y + w.h / 2 + 1} textAnchor="middle" dominantBaseline="middle"
-            fill="#FF4757" fontSize={5} fontFamily={MONO} fillOpacity={0.6}>WALL</text>
+            fill="#CE6B6B" fontSize={5} fontFamily={MONO} fillOpacity={0.6}>WALL</text>
         </g>
       ))}
 
       {/* Path */}
       <motion.path
-        d={pathD} fill="none" stroke="#CAFF57" strokeWidth="1.5"
+        d={pathD} fill="none" stroke="#9DBE8D" strokeWidth="1.5"
         strokeDasharray="5 3"
         animate={inView ? { pathLength: [0, 1] } : { pathLength: 0 }}
         transition={{ duration: 2.4 * spd, ease: 'easeInOut', repeat: Infinity, repeatDelay: 0.7 }}
       />
 
       {/* Start marker */}
-      <circle cx={DRONE_WPS[0][0]} cy={DRONE_WPS[0][1]} r={5} fill="none" stroke="#57FFD8" strokeWidth={1.5} />
+      <circle cx={DRONE_WPS[0][0]} cy={DRONE_WPS[0][1]} r={5} fill="none" stroke="#7BC4AE" strokeWidth={1.5} />
       {/* End marker */}
-      <circle cx={DRONE_WPS[DRONE_WPS.length - 1][0]} cy={DRONE_WPS[DRONE_WPS.length - 1][1]} r={5} fill="#CAFF57" fillOpacity={0.25} stroke="#CAFF57" strokeWidth={1.5} />
+      <circle cx={DRONE_WPS[DRONE_WPS.length - 1][0]} cy={DRONE_WPS[DRONE_WPS.length - 1][1]} r={5} fill="#9DBE8D" fillOpacity={0.25} stroke="#9DBE8D" strokeWidth={1.5} />
 
       {/* Drone dot */}
       {inView && (
-        <motion.circle r={4.5} fill="#CAFF57"
+        <motion.circle r={4.5} fill="#9DBE8D"
           animate={{
             cx: DRONE_WPS.map(p => p[0]),
             cy: DRONE_WPS.map(p => p[1]),
@@ -513,17 +561,17 @@ function AgentsVisual() {
       {[{ x1: 14, x2: 28 }, { x1: 43, x2: 57 }].map((seg, i) => (
         <motion.line key={i}
           x1={seg.x1} y1={8} x2={seg.x2} y2={8}
-          stroke="#CAFF57" strokeWidth={1.5}
+          stroke="#9DBE8D" strokeWidth={1.5}
           strokeDasharray={LINE}
           animate={{ strokeDashoffset: [LINE, 0] }}
           transition={{ duration: 0.75, repeat: Infinity, delay: i * 0.38, ease: 'linear' }}
         />
       ))}
       {[28, 57].map((x, i) => (
-        <polygon key={i} points={`${x},8 ${x - 4},5 ${x - 4},11`} fill="#CAFF57" />
+        <polygon key={i} points={`${x},8 ${x - 4},5 ${x - 4},11`} fill="#9DBE8D" />
       ))}
       {[8, 35, 63].map((cx, i) => (
-        <circle key={i} cx={cx} cy={8} r={5} fill="#CAFF57" fillOpacity={0.15} stroke="#CAFF57" strokeWidth={1} />
+        <circle key={i} cx={cx} cy={8} r={5} fill="#9DBE8D" fillOpacity={0.15} stroke="#9DBE8D" strokeWidth={1} />
       ))}
     </svg>
   )
@@ -553,7 +601,7 @@ function TiltCard({ children, className, disabled }: { children: ReactNode; clas
   const glrY  = useMotionValue(50)
   const sX    = useSpring(rotX, { stiffness: 140, damping: 18 })
   const sY    = useSpring(rotY, { stiffness: 140, damping: 18 })
-  const glare = useMotionTemplate`radial-gradient(ellipse at ${glrX}% ${glrY}%, rgba(202,255,87,0.07) 0%, transparent 60%)`
+  const glare = useMotionTemplate`radial-gradient(ellipse at ${glrX}% ${glrY}%, rgba(157,190,141,0.07) 0%, transparent 60%)`
   const [hov, setHov] = useState(false)
 
   function onMove(e: React.MouseEvent<HTMLDivElement>) {
@@ -600,8 +648,8 @@ function CardMeta({ project }: { project: ProjectData }) {
       <div className="flex items-center gap-2">
         {project.live && (
           <span style={{
-            fontSize: '8px', fontFamily: MONO, color: '#4ADE80',
-            border: '1px solid rgba(74,222,128,0.3)', background: 'rgba(74,222,128,0.06)',
+            fontSize: '8px', fontFamily: MONO, color: '#6FBF84',
+            border: '1px solid rgba(111,191,132,0.3)', background: 'rgba(111,191,132,0.06)',
             padding: '2px 6px', borderRadius: '999px', letterSpacing: '0.12em',
           }}>
             LIVE
@@ -653,7 +701,7 @@ function FeaturedCard({ project, inView, reduced }: { project: ProjectData; inVi
         style={{ minHeight: 320 }}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        whileHover={{ borderColor: 'rgba(202,255,87,0.32)' }}
+        whileHover={{ borderColor: 'rgba(157,190,141,0.32)' }}
         transition={{ duration: 0.22 }}
       >
         <div style={{
@@ -701,7 +749,7 @@ function StandardCard({ project, inView, reduced }: { project: ProjectData; inVi
         style={{ minHeight: 260 }}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        whileHover={{ borderColor: 'rgba(202,255,87,0.32)' }}
+        whileHover={{ borderColor: 'rgba(157,190,141,0.32)' }}
         transition={{ duration: 0.22 }}
       >
         <div style={{
@@ -748,8 +796,8 @@ function StripCard({ project }: { project: ProjectData }) {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       animate={{
-        borderColor: hovered ? 'rgba(202,255,87,0.42)' : 'rgba(255,255,255,0.08)',
-        boxShadow:   hovered ? 'inset 2px 0 0 #CAFF57' : 'inset 0 0 0 transparent',
+        borderColor: hovered ? 'rgba(157,190,141,0.42)' : 'rgba(255,255,255,0.08)',
+        boxShadow:   hovered ? 'inset 2px 0 0 #9DBE8D' : 'inset 0 0 0 transparent',
       }}
       transition={{ duration: 0.2 }}
     >
