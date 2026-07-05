@@ -5,6 +5,8 @@ import { motion, AnimatePresence, useInView } from 'framer-motion'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { fadeUp } from '@/lib/motion'
+import { useReducedMotion } from '@/lib/useReducedMotion'
+import StackIcon from '@/components/StackIcon'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -119,21 +121,22 @@ const FILTERS: FilterType[] = ['ALL', 'EXPERIENCE', 'ACHIEVEMENT']
 
 // ── Config ────────────────────────────────────────────────────────────────────
 
+// Semantic type colors — token values: accent (sage) / edu / gold, all muted
 const TYPE_CONFIG: Record<EntryType, { color: string; bg: string }> = {
-  EXPERIENCE:  { color: '#CAFF57', bg: 'rgba(202,255,87,0.06)'  },
-  EDUCATION:   { color: '#57FFD8', bg: 'rgba(87,255,216,0.06)' },
-  ACHIEVEMENT: { color: '#FFD657', bg: 'rgba(255,214,87,0.06)' },
+  EXPERIENCE:  { color: '#9DBE8D', bg: 'rgba(157,190,141,0.06)' },
+  EDUCATION:   { color: '#7BC4AE', bg: 'rgba(123,196,174,0.06)' },
+  ACHIEVEMENT: { color: '#D9BC6E', bg: 'rgba(217,188,110,0.06)' },
 }
 
 const TAG_COLORS: Record<string, string> = {
-  VAPI: '#CAFF57', LangGraph: '#CAFF57', OpenAI: '#CAFF57', LangChain: '#CAFF57',
-  MLflow: '#CAFF57', AI: '#CAFF57',
-  n8n: '#57FFD8', FastAPI: '#57FFD8',
-  Supabase: '#FFD657', Docker: '#FFD657', Python: '#FFD657',
-  React: '#FF9557',
+  VAPI: '#9DBE8D', LangGraph: '#9DBE8D', OpenAI: '#9DBE8D', LangChain: '#9DBE8D',
+  MLflow: '#9DBE8D', AI: '#9DBE8D',
+  n8n: '#7BC4AE', FastAPI: '#7BC4AE',
+  Supabase: '#D9BC6E', Docker: '#D9BC6E', Python: '#D9BC6E',
+  React: '#C08D66',
 }
 
-const MONO = "'Courier New', monospace"
+const MONO = 'var(--font-geist-mono), monospace'
 const EASE_OUT_EXPO = [0.16, 1, 0.3, 1] as const
 
 // ── Small components ──────────────────────────────────────────────────────────
@@ -145,7 +148,9 @@ function TagPill({ tag }: { tag: string }) {
       fontSize: '10px', fontFamily: MONO, color,
       border: `1px solid ${color}44`, background: `${color}14`,
       padding: '2px 8px', borderRadius: '999px', whiteSpace: 'nowrap',
+      display: 'inline-flex', alignItems: 'center', gap: '5px',
     }}>
+      <StackIcon name={tag} color={color} size={10} />
       {tag}
     </span>
   )
@@ -156,11 +161,11 @@ function LiveBadge() {
     <span style={{
       display: 'inline-flex', alignItems: 'center', gap: 5,
       fontSize: '9px', fontFamily: MONO, letterSpacing: '0.12em',
-      color: '#4ADE80', border: '1px solid rgba(74,222,128,0.3)',
-      background: 'rgba(74,222,128,0.06)', padding: '2px 7px', borderRadius: '999px',
+      color: '#6FBF84', border: '1px solid rgba(111,191,132,0.3)',
+      background: 'rgba(111,191,132,0.06)', padding: '2px 7px', borderRadius: '999px',
     }}>
       <motion.span
-        style={{ width: 5, height: 5, borderRadius: '50%', background: '#4ADE80', display: 'inline-block' }}
+        style={{ width: 5, height: 5, borderRadius: '50%', background: '#6FBF84', display: 'inline-block' }}
         animate={{ opacity: [1, 0.3, 1] }}
         transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
       />
@@ -195,14 +200,6 @@ function BulletList({ bullets }: { bullets: string[] }) {
   )
 }
 
-function PeriodLabel({ period, align = 'right' }: { period: string; align?: 'left' | 'right' }) {
-  return (
-    <p style={{ fontFamily: MONO, fontSize: '11px', color: 'var(--color-dim)', letterSpacing: '0.06em', whiteSpace: 'nowrap', textAlign: align }}>
-      {period}
-    </p>
-  )
-}
-
 // ── Timeline dot + radar ping ─────────────────────────────────────────────────
 
 function TimelineDot({ typeColor }: { typeColor: string }) {
@@ -229,7 +226,7 @@ function TimelineDot({ typeColor }: { typeColor: string }) {
   )
 }
 
-// ── Card templates ────────────────────────────────────────────────────────────
+// ── Card templates (visual weight per entry type) ────────────────────────────
 
 function PrimaryCard({ entry, isRight, reduced }: { entry: Entry; isRight: boolean; reduced: boolean }) {
   const { color, bg } = TYPE_CONFIG[entry.type]
@@ -237,10 +234,10 @@ function PrimaryCard({ entry, isRight, reduced }: { entry: Entry; isRight: boole
     <motion.article
       className="w-full rounded-2xl border border-border bg-surface"
       style={{ minHeight: 220, borderTop: `3px solid ${color}` }}
-      initial={reduced ? undefined : { opacity: 0, x: isRight ? 40 : -40, filter: 'blur(4px)' }}
-      whileInView={reduced ? undefined : { opacity: 1, x: 0, filter: 'blur(0px)' }}
+      initial={reduced ? undefined : { opacity: 0, y: 16 }}
+      whileInView={reduced ? undefined : { opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-60px' }}
-      transition={{ duration: 0.65, ease: EASE_OUT_EXPO }}
+      transition={{ duration: 0.55, ease: EASE_OUT_EXPO }}
       whileHover={reduced ? undefined : { borderColor: `${color}44`, backgroundColor: bg, y: -3 }}
     >
       <div className="p-6">
@@ -267,10 +264,10 @@ function SecondaryCard({ entry, isRight, reduced }: { entry: Entry; isRight: boo
     <motion.article
       className="w-full rounded-xl border border-border bg-surface"
       style={{ borderTop: `3px solid ${color}` }}
-      initial={reduced ? undefined : { opacity: 0, x: isRight ? 40 : -40, filter: 'blur(4px)' }}
-      whileInView={reduced ? undefined : { opacity: 1, x: 0, filter: 'blur(0px)' }}
+      initial={reduced ? undefined : { opacity: 0, y: 16 }}
+      whileInView={reduced ? undefined : { opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-60px' }}
-      transition={{ duration: 0.65, ease: EASE_OUT_EXPO }}
+      transition={{ duration: 0.55, ease: EASE_OUT_EXPO }}
       whileHover={reduced ? undefined : { borderColor: `${color}44`, backgroundColor: bg, y: -3 }}
     >
       <div className="p-5">
@@ -284,6 +281,7 @@ function SecondaryCard({ entry, isRight, reduced }: { entry: Entry; isRight: boo
         <button
           onClick={() => setExpanded(v => !v)}
           className="mt-2 mb-1 text-xs font-mono text-dim hover:text-muted transition-colors"
+          aria-expanded={expanded}
         >
           {expanded ? '— Less' : '+ Details'}
         </button>
@@ -316,10 +314,10 @@ function TertiaryCard({ entry, isRight, reduced }: { entry: Entry; isRight: bool
     <motion.article
       className="w-full rounded-lg border border-border"
       style={{ background: 'transparent' }}
-      initial={reduced ? undefined : { opacity: 0, x: isRight ? 40 : -40, filter: 'blur(4px)' }}
-      whileInView={reduced ? undefined : { opacity: 1, x: 0, filter: 'blur(0px)' }}
+      initial={reduced ? undefined : { opacity: 0, y: 16 }}
+      whileInView={reduced ? undefined : { opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-60px' }}
-      transition={{ duration: 0.65, ease: EASE_OUT_EXPO }}
+      transition={{ duration: 0.55, ease: EASE_OUT_EXPO }}
       whileHover={reduced ? undefined : { borderColor: `${color}44`, backgroundColor: bg, y: -2 }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
@@ -352,16 +350,9 @@ function TertiaryCard({ entry, isRight, reduced }: { entry: Entry; isRight: bool
   )
 }
 
-// ── Entry card dispatcher ─────────────────────────────────────────────────────
-
-function EntryCard({ entry, isRight, reduced, showPeriod = false }: { entry: Entry; isRight: boolean; reduced: boolean; showPeriod?: boolean }) {
+function EntryCard({ entry, isRight, reduced }: { entry: Entry; isRight: boolean; reduced: boolean }) {
   return (
     <div className="w-full">
-      {showPeriod && (
-        <p style={{ fontFamily: MONO, fontSize: '11px', color: 'var(--color-dim)', letterSpacing: '0.06em', marginBottom: 6 }}>
-          {entry.period}
-        </p>
-      )}
       {entry.weight === 'primary'   && <PrimaryCard   entry={entry} isRight={isRight} reduced={reduced} />}
       {entry.weight === 'secondary' && <SecondaryCard entry={entry} isRight={isRight} reduced={reduced} />}
       {entry.weight === 'tertiary'  && <TertiaryCard  entry={entry} isRight={isRight} reduced={reduced} />}
@@ -377,17 +368,14 @@ export default function Timeline() {
   const lineRef     = useRef<HTMLDivElement>(null)
   const inView      = useInView(sectionRef, { once: true, margin: '-80px' })
   const [filter, setFilter] = useState<FilterType>('ALL')
+  const reduced     = useReducedMotion()
 
-  const reduced =
-    typeof window !== 'undefined'
-      ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
-      : false
-
-  // GSAP center-line draw on scroll
+  // GSAP center-line draw on scroll — quiet structural motion: the line's
+  // progress encodes chronology, it is not a spectacle moment.
   useEffect(() => {
     if (reduced || !lineRef.current || !timelineRef.current) return
     gsap.registerPlugin(ScrollTrigger)
-    gsap.fromTo(
+    const tween = gsap.fromTo(
       lineRef.current,
       { scaleY: 0 },
       {
@@ -402,7 +390,10 @@ export default function Timeline() {
         },
       }
     )
-    return () => ScrollTrigger.getAll().forEach(t => t.kill())
+    return () => {
+      tween.scrollTrigger?.kill()
+      tween.kill()
+    }
   }, [reduced])
 
   const visible = ENTRIES.filter(e =>
@@ -422,8 +413,8 @@ export default function Timeline() {
           animate={inView ? 'visible' : 'hidden'}
           className="mb-10"
         >
-          <p className="mb-3 font-mono text-[12px] tracking-widest text-dim">— EXPERIENCE & EDUCATION</p>
-          <h2 className="text-[36px] font-medium text-text md:text-[40px]">How I got here.</h2>
+          <p className="mb-3 font-mono text-[12px] tracking-widest text-dim">— Experience & Education</p>
+          <h2 className="font-mono text-[30px] font-medium tracking-tight text-text md:text-[38px]">How I got here.</h2>
         </motion.div>
 
         {/* Filter bar */}
@@ -437,13 +428,14 @@ export default function Timeline() {
             <button
               key={f}
               onClick={() => setFilter(f)}
+              aria-pressed={filter === f}
               style={{
                 fontFamily: MONO, fontSize: '12px', letterSpacing: '0.08em',
                 padding: '4px 14px', borderRadius: '999px', cursor: 'pointer',
-                border: `1px solid ${filter === f ? '#CAFF57' : 'var(--color-border)'}`,
-                color:      filter === f ? '#CAFF57' : 'var(--color-muted)',
-                background: filter === f ? 'rgba(202,255,87,0.08)' : 'transparent',
-                transition: 'all 150ms',
+                border: `1px solid ${filter === f ? 'var(--color-accent)' : 'var(--color-border)'}`,
+                color:      filter === f ? 'var(--color-accent)' : 'var(--color-muted)',
+                background: filter === f ? 'rgba(157,190,141,0.08)' : 'transparent',
+                transition: 'all var(--dur) var(--ease-out)',
               }}
             >
               {f}
@@ -454,19 +446,20 @@ export default function Timeline() {
         {/* Timeline container */}
         <div ref={timelineRef} className="relative">
 
-          {/* Center line — desktop only, GSAP-driven scaleY */}
+          {/* Chronology line — left rail on mobile, center spine on desktop.
+              GSAP owns this element's transform (scaleY), so horizontal
+              position uses `left` only, never translate. */}
           <div
             ref={lineRef}
-            className="hidden lg:block absolute top-0 bottom-0 w-px"
+            className="absolute bottom-0 top-0 w-px left-[11.5px] lg:left-1/2"
             style={{
-              left: '50%',
-              transform: 'translateX(-50%)',
-              background: 'var(--color-border2)',
+              background: 'var(--color-border-2)',
               transformOrigin: 'top center',
             }}
           />
 
-          {/* Entries with AnimatePresence for filter reflow */}
+          {/* Entries — ONE card instance per entry; CSS grid repositions it
+              across breakpoints. No duplicate DOM nodes. */}
           <motion.div layout>
             <AnimatePresence mode="popLayout">
               {visible.map((entry, i) => {
@@ -483,52 +476,37 @@ export default function Timeline() {
                     transition={{ duration: 0.25 }}
                     style={{ marginBottom: 48 }}
                   >
-                    {/* ── Mobile (< lg): single column, period inside card ── */}
-                    <div className="lg:hidden">
-                      <EntryCard entry={entry} isRight reduced={reduced} showPeriod />
-                    </div>
+                    <div className="grid grid-cols-[24px_1fr] gap-x-4 gap-y-1.5 lg:grid-cols-[1fr_40px_1fr] lg:items-center lg:gap-x-0 lg:gap-y-0">
 
-                    {/* ── Desktop (≥ lg): zigzag 3-column grid ── */}
-                    <div
-                      className="hidden lg:grid"
-                      style={{ gridTemplateColumns: '1fr 40px 1fr', alignItems: 'center' }}
-                    >
-                      {/* Left column */}
-                      <div style={{ display: 'flex', justifyContent: 'flex-end', paddingRight: 24 }}>
-                        {isRight ? (
-                          <motion.div
-                            initial={reduced ? undefined : { opacity: 0, x: 40 }}
-                            whileInView={reduced ? undefined : { opacity: 1, x: 0 }}
-                            viewport={{ once: true, margin: '-60px' }}
-                            transition={{ duration: 0.5, ease: EASE_OUT_EXPO, delay: 0.1 }}
-                          >
-                            <PeriodLabel period={entry.period} align="right" />
-                          </motion.div>
-                        ) : (
-                          <EntryCard entry={entry} isRight={false} reduced={reduced} />
-                        )}
-                      </div>
-
-                      {/* Center column — dot (line passes through here) */}
-                      <div style={{ display: 'flex', justifyContent: 'center', position: 'relative', zIndex: 1 }}>
+                      {/* Dot — mobile: left rail; desktop: center spine */}
+                      <div className="relative z-[1] col-start-1 row-start-1 flex justify-center pt-1 lg:col-start-2 lg:pt-0">
                         <TimelineDot typeColor={typeColor} />
                       </div>
 
-                      {/* Right column */}
-                      <div style={{ paddingLeft: 24 }}>
-                        {isRight ? (
-                          <EntryCard entry={entry} isRight reduced={reduced} />
-                        ) : (
-                          <motion.div
-                            initial={reduced ? undefined : { opacity: 0, x: -40 }}
-                            whileInView={reduced ? undefined : { opacity: 1, x: 0 }}
-                            viewport={{ once: true, margin: '-60px' }}
-                            transition={{ duration: 0.5, ease: EASE_OUT_EXPO, delay: 0.1 }}
-                          >
-                            <PeriodLabel period={entry.period} align="left" />
-                          </motion.div>
-                        )}
+                      {/* Period — mobile: above card; desktop: opposite column */}
+                      <motion.p
+                        className={`col-start-2 row-start-1 self-center whitespace-nowrap font-mono text-[11px] tracking-wide text-dim ${
+                          isRight
+                            ? 'lg:col-start-1 lg:pr-6 lg:text-right'
+                            : 'lg:col-start-3 lg:pl-6 lg:text-left'
+                        }`}
+                        initial={reduced ? undefined : { opacity: 0 }}
+                        whileInView={reduced ? undefined : { opacity: 1 }}
+                        viewport={{ once: true, margin: '-60px' }}
+                        transition={{ duration: 0.5, ease: EASE_OUT_EXPO, delay: 0.1 }}
+                      >
+                        {entry.period}
+                      </motion.p>
+
+                      {/* Card — single instance */}
+                      <div
+                        className={`col-start-2 row-start-2 lg:row-start-1 ${
+                          isRight ? 'lg:col-start-3 lg:pl-6' : 'lg:col-start-1 lg:pr-6'
+                        }`}
+                      >
+                        <EntryCard entry={entry} isRight={isRight} reduced={reduced} />
                       </div>
+
                     </div>
                   </motion.div>
                 )
