@@ -1,17 +1,19 @@
 'use client'
 
 /**
- * Layered background system — eight composited layers, all generated (no
- * image downloads, no licensing, no LCP cost):
+ * Layered background system — nine composited layers:
  *   1. Base: handled by `html { background-color }` in globals.css
- *   2. Blueprint dot-grid — fine engineering-paper texture, masked to fade
+ *   2. Moss macro photograph — real texture at low opacity, graded dark so it
+ *      reads as material, not image (Unsplash photo 1658819543328-59b114859eaf,
+ *      Unsplash License — free use, no attribution required)
+ *   3. Blueprint dot-grid — fine engineering-paper texture, masked to fade
  *      toward the edges so it never competes with the vignette
- *   3. Topographic contours — nested moss-line loops, upper-right + lower-left
- *   4. Forest Moss orb A — upper-right, slow 44s drift
- *   5. Forest Moss orb B — lower-left, slower 56s drift, phase-offset
- *   6. Vanilla Silk warmth — center, breathes on 36s loop
- *   7. SVG fractalNoise grain — mix-blend-mode:overlay film texture
- *   8. Edge vignette — darkens periphery, creates cinematic focal depth
+ *   4. Topographic contours — nested moss-line loops, upper-right + lower-left
+ *   5. Forest Moss orb A — upper-right, slow 44s drift
+ *   6. Forest Moss orb B — lower-left, slower 56s drift, phase-offset
+ *   7. Vanilla Silk warmth — center, breathes on 36s loop
+ *   8. SVG fractalNoise grain — mix-blend-mode:overlay film texture
+ *   9. Edge vignette — darkens periphery, creates cinematic focal depth
  *
  * All animated elements use only `transform` + `opacity` — zero layout repaints.
  */
@@ -58,7 +60,22 @@ export default function Background() {
       className="fixed inset-0 overflow-hidden"
       style={{ zIndex: -1, pointerEvents: 'none' }}
     >
-      {/* ── Layer 2: Blueprint dot-grid ── */}
+      {/* ── Layer 2: Moss macro photograph ── */}
+      {/* Graded down (brightness/saturation) and held at 9% so it registers
+          as physical texture under the light, never as a "background image".
+          The vignette and grain above unify it with the generated layers. */}
+      <div
+        className="absolute inset-0"
+        style={{
+          backgroundImage: 'url(/bg-moss.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          opacity: 0.09,
+          filter: 'brightness(0.75) saturate(0.85)',
+        }}
+      />
+
+      {/* ── Layer 3: Blueprint dot-grid ── */}
       {/* 28px engineering-paper grid in muted sage. The radial mask keeps it
           strongest through the mid-page and fades it before the vignette. */}
       <div
