@@ -1,7 +1,6 @@
 'use client'
 
 import { useRef, useEffect } from 'react'
-import Image from 'next/image'
 import { motion, useInView } from 'framer-motion'
 import { fadeUp, scaleIn, staggerContainer, easeOutExpo } from '@/lib/motion'
 import { META, STATS } from '@/lib/constants'
@@ -75,53 +74,18 @@ export default function About() {
           variants={reduced ? undefined : staggerContainer}
           initial={reduced ? undefined : 'hidden'}
           animate={inView ? 'visible' : 'hidden'}
-          className="flex flex-col gap-12 lg:flex-row lg:gap-16"
+          className="flex flex-col gap-12 lg:flex-row lg:gap-20"
         >
-          {/* Photo */}
-          <motion.div
-            variants={reduced ? undefined : scaleIn}
-            className="flex-shrink-0 lg:w-[260px]"
-          >
-            <div className="relative mx-auto w-[200px] lg:w-full">
-              <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl border border-border bg-surface-2">
-                <Image
-                  src="/11.jpeg"
-                  alt="Haseeb Arshad"
-                  fill
-                  sizes="(min-width: 1024px) 260px, 200px"
-                  className="object-cover"
-                  style={{ filter: 'saturate(0.88) contrast(1.03)' }}
-                />
-                {/* Moss grade — ties the photo into the palette instead of
-                    letting a warm-toned image float on the dark theme */}
-                <div
-                  aria-hidden="true"
-                  className="pointer-events-none absolute inset-0"
-                  style={{
-                    background:
-                      'linear-gradient(180deg, rgba(9,11,8,0) 55%, rgba(9,11,8,0.35) 100%), radial-gradient(ellipse at 30% 20%, rgba(78,107,69,0.12) 0%, transparent 60%)',
-                    mixBlendMode: 'normal',
-                  }}
-                />
-              </div>
-              {/* Accent corner */}
-              <div
-                className="absolute -bottom-2 -right-2 h-12 w-12 rounded-lg border border-accent/20"
-                style={{ background: 'rgba(157,190,141,0.05)' }}
-              />
-            </div>
-          </motion.div>
-
-          {/* Bio column */}
+          {/* Bio column — carries the section now that there's no photo */}
           <motion.div
             variants={reduced ? undefined : fadeUp}
-            className="flex flex-[1] flex-col gap-6"
+            className="flex flex-[1.3] flex-col gap-6"
           >
             <p className="font-mono text-[12px] tracking-widest text-dim">— About</p>
-            <h2 className="font-mono text-[30px] font-medium leading-tight tracking-tight text-text md:text-[38px]">
+            <h2 className="font-mono text-[32px] font-medium leading-tight tracking-tight text-text md:text-[44px]">
               Who I am.
             </h2>
-            <p className="text-[16px] leading-[1.7] text-muted">{META.bio}</p>
+            <p className="max-w-xl text-[17px] leading-[1.8] text-muted">{META.bio}</p>
 
             {/* Subtle accent rule that draws in */}
             <motion.div
