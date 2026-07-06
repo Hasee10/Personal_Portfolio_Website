@@ -1,7 +1,7 @@
 'use client'
 
 import { type ReactNode, useRef, useState } from 'react'
-import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import {
   motion,
   useInView,
@@ -133,35 +133,53 @@ function CardFooter({ project }: { project: Project }) {
   )
 }
 
+/* Whole-card navigation: the article itself is the click target (so the
+   description, tags, and empty padding all navigate too), while the
+   GitHub/Live links inside CardFooter stopPropagation to open independently
+   instead of double-firing. Keyboard-accessible via role="link" + Enter/Space. */
+function useCardNav(href: string) {
+  const router = useRouter()
+  return {
+    role: 'link' as const,
+    tabIndex: 0,
+    onClick: () => router.push(href),
+    onKeyDown: (e: React.KeyboardEvent) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault()
+        router.push(href)
+      }
+    },
+  }
+}
+
 function FeaturedCard({ project, inView, reduced }: { project: Project; inView: boolean; reduced: boolean }) {
   const [hovered, setHovered] = useState(false)
   const detailHref = `/projects/${project.slug}`
+  const nav = useCardNav(detailHref)
   return (
     <TiltCard disabled={reduced} className="h-full">
       <motion.article
-        className="flex h-full flex-col rounded-xl border border-border bg-surface"
+        className="flex h-full cursor-pointer flex-col rounded-xl border border-border bg-surface outline-none"
         style={{ minHeight: 320 }}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
         whileHover={{ borderColor: 'rgba(157,190,141,0.32)' }}
         transition={{ duration: 0.22 }}
+        aria-label={`View ${project.name}`}
+        {...nav}
       >
-        <Link href={detailHref} className="block" tabIndex={-1} aria-hidden="true">
-          <div style={{
-            height: 140, overflow: 'hidden',
-            borderRadius: '12px 12px 0 0',
-            borderBottom: '1px solid var(--color-border)',
-            background: 'var(--color-surface-2)',
-          }}>
-            <ProjectVisual type={project.visual} hovered={hovered} inView={inView} />
-          </div>
-        </Link>
+        <div style={{
+          height: 140, overflow: 'hidden',
+          borderRadius: '12px 12px 0 0',
+          borderBottom: '1px solid var(--color-border)',
+          background: 'var(--color-surface-2)',
+        }}>
+          <ProjectVisual type={project.visual} hovered={hovered} inView={inView} />
+        </div>
         <div className="flex flex-1 flex-col gap-3 p-5">
           <CardMeta project={project} />
-          <h3 className="text-[18px] font-semibold">
-            <Link href={detailHref} className="text-text transition-colors hover:text-accent">
-              {project.name}
-            </Link>
+          <h3 className="text-[18px] font-semibold text-text transition-colors group-hover:text-accent">
+            {project.name}
           </h3>
           <p className="flex-1 text-[13px] leading-relaxed text-muted">{project.desc}</p>
           <div className="flex flex-wrap gap-1.5">
@@ -173,13 +191,9 @@ function FeaturedCard({ project, inView, reduced }: { project: Project; inView: 
               <motion.div
                 initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 4 }}
                 transition={{ duration: 0.2 }}
+                style={{ fontSize: '10px', fontFamily: MONO, color: 'var(--color-accent)', letterSpacing: '0.14em' }}
               >
-                <Link
-                  href={detailHref}
-                  style={{ fontSize: '10px', fontFamily: MONO, color: 'var(--color-accent)', letterSpacing: '0.14em' }}
-                >
-                  VIEW PROJECT →
-                </Link>
+                VIEW PROJECT →
               </motion.div>
             )}
           </AnimatePresence>
@@ -192,32 +206,31 @@ function FeaturedCard({ project, inView, reduced }: { project: Project; inView: 
 function StandardCard({ project, inView, reduced }: { project: Project; inView: boolean; reduced: boolean }) {
   const [hovered, setHovered] = useState(false)
   const detailHref = `/projects/${project.slug}`
+  const nav = useCardNav(detailHref)
   return (
     <TiltCard disabled={reduced} className="h-full">
       <motion.article
-        className="flex h-full flex-col rounded-xl border border-border bg-surface"
+        className="flex h-full cursor-pointer flex-col rounded-xl border border-border bg-surface outline-none"
         style={{ minHeight: 260 }}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
         whileHover={{ borderColor: 'rgba(157,190,141,0.32)' }}
         transition={{ duration: 0.22 }}
+        aria-label={`View ${project.name}`}
+        {...nav}
       >
-        <Link href={detailHref} className="block" tabIndex={-1} aria-hidden="true">
-          <div style={{
-            height: 80, overflow: 'hidden',
-            borderRadius: '12px 12px 0 0',
-            borderBottom: '1px solid var(--color-border)',
-            background: 'var(--color-surface-2)',
-          }}>
-            <ProjectVisual type={project.visual} hovered={hovered} inView={inView} />
-          </div>
-        </Link>
+        <div style={{
+          height: 80, overflow: 'hidden',
+          borderRadius: '12px 12px 0 0',
+          borderBottom: '1px solid var(--color-border)',
+          background: 'var(--color-surface-2)',
+        }}>
+          <ProjectVisual type={project.visual} hovered={hovered} inView={inView} />
+        </div>
         <div className="flex flex-1 flex-col gap-2 p-4">
           <CardMeta project={project} />
-          <h3 className="text-[16px] font-semibold">
-            <Link href={detailHref} className="text-text transition-colors hover:text-accent">
-              {project.name}
-            </Link>
+          <h3 className="text-[16px] font-semibold text-text transition-colors">
+            {project.name}
           </h3>
           <p className="flex-1 text-[13px] leading-relaxed text-muted">{project.desc}</p>
           <div className="flex flex-wrap gap-1.5">
@@ -229,13 +242,9 @@ function StandardCard({ project, inView, reduced }: { project: Project; inView: 
               <motion.div
                 initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 4 }}
                 transition={{ duration: 0.2 }}
+                style={{ fontSize: '10px', fontFamily: MONO, color: 'var(--color-accent)', letterSpacing: '0.14em' }}
               >
-                <Link
-                  href={detailHref}
-                  style={{ fontSize: '10px', fontFamily: MONO, color: 'var(--color-accent)', letterSpacing: '0.14em' }}
-                >
-                  VIEW PROJECT →
-                </Link>
+                VIEW PROJECT →
               </motion.div>
             )}
           </AnimatePresence>
@@ -248,9 +257,10 @@ function StandardCard({ project, inView, reduced }: { project: Project; inView: 
 function StripCard({ project }: { project: Project }) {
   const [hovered, setHovered] = useState(false)
   const detailHref = `/projects/${project.slug}`
+  const nav = useCardNav(detailHref)
   return (
     <motion.article
-      className="flex flex-col gap-3 rounded-xl p-4 md:flex-row md:items-center md:gap-6"
+      className="flex cursor-pointer flex-col gap-3 rounded-xl p-4 outline-none md:flex-row md:items-center md:gap-6"
       style={{ border: '1px solid var(--color-border)', background: 'var(--color-surface)', minHeight: 80 }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
@@ -259,16 +269,16 @@ function StripCard({ project }: { project: Project }) {
         boxShadow:   hovered ? 'inset 2px 0 0 #9DBE8D' : 'inset 0 0 0 transparent',
       }}
       transition={{ duration: 0.2 }}
+      aria-label={`View ${project.name}`}
+      {...nav}
     >
       {/* Title block — h3 first so the name can never be lost in the wrap */}
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 md:min-w-[300px]">
         <span style={{ fontFamily: MONO, fontSize: '11px', color: 'var(--color-dim)', letterSpacing: '0.08em' }}>
           {project.number}
         </span>
-        <h3 className="text-[15px] font-semibold">
-          <Link href={detailHref} className="text-text transition-colors hover:text-accent">
-            {project.name}
-          </Link>
+        <h3 className="text-[15px] font-semibold text-text transition-colors">
+          {project.name}
         </h3>
         <StatusBadge status={project.status} />
         <AgentsMiniVisual />
@@ -278,7 +288,8 @@ function StripCard({ project }: { project: Project }) {
         {project.tags.slice(0, 3).map(t => <TagPill key={t} tag={t} />)}
         {project.github ? (
           <a href={project.github} target="_blank" rel="noopener noreferrer"
-            className="ml-2 flex items-center gap-1 text-[12px] text-muted transition-colors hover:text-accent">
+            className="ml-2 flex items-center gap-1 text-[12px] text-muted transition-colors hover:text-accent"
+            onClick={e => e.stopPropagation()}>
             <Github size={11} /> GitHub ↗
           </a>
         ) : (
@@ -286,10 +297,9 @@ function StripCard({ project }: { project: Project }) {
             <Lock size={10} /> {project.source ?? 'Private'}
           </span>
         )}
-        <Link href={detailHref}
-          className="flex items-center gap-1 text-[12px] text-muted transition-colors hover:text-accent">
+        <span className="flex items-center gap-1 text-[12px] text-muted transition-colors">
           Details →
-        </Link>
+        </span>
       </div>
     </motion.article>
   )
